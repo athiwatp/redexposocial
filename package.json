@@ -1,0 +1,31 @@
+{
+  "name": "red",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "node server.js",
+    "start": "node server.js NODE_ENV=production"
+  },
+  "author": "César Guadarrama",
+  "license": "ISC",
+  "dependencies": {
+    "bower": "^1.7.9",
+    "express": "^4.13.4",
+    "gulp": "^3.9.1",
+    "nunjucks": "^2.4.2",
+    "jsonwebtoken": "^6.2.0",
+    "multer": "^1.2.0"
+  },
+  "devDependencies": {
+    "gulp-clean-css": "^2.0.10",
+    "gulp-concat": "^2.6.0",
+    "gulp-htmlmin": "^2.0.0",
+    "gulp-minify": "0.0.13",
+    "gulp-nodemon": "^2.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.3.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.5.2"
+  }
+}
