@@ -1,5 +1,5 @@
 'use strict'
-let mongoose = require('mongoose'),
+let mongoose = require('mongoose')
 
 var userSchema = new mongoose.Schema({
     title: { type:String, unique: true },
@@ -25,8 +25,10 @@ var userSchema = new mongoose.Schema({
         lng: String
       }
     },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     images: [String],
-    auth: Boolean
+    auth: Boolean,
+    status: {type: Number, default: 0} //Cancelled, moved, active, etc.
 });
 
 module.exports = mongoose.model('Event', userSchema);
