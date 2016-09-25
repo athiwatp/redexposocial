@@ -1,9 +1,12 @@
 'use strict'
 let mongoose = require('mongoose')
 
-let userSchema = new mongoose.Schema({
-    name: String,
-    username: String,
+let orgSchema = new mongoose.Schema({
+    name: {
+      short: {type: String, unique: true, required: true},
+      legal: {type: String, unique: true}
+    },
+    username: {type: String, unique: true, required: true},
     topics: [String],
     news: [{
       type: mongoose.Schema.Types.ObjectId,
@@ -30,14 +33,34 @@ let userSchema = new mongoose.Schema({
         lng: String
       }
     },
+    fundation: {
+      date: Date,
+      location: {
+        street: String,
+        number: String,
+        locality: String,
+        pc: Number,
+        state: String,
+        country: String,
+        position: {
+          lat: String,
+          lng: String
+        }
+      }
+    },
     events: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Event'
     }],
     members: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }]
-});
+      user: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+      access: Number
+    }],
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+})
 
-module.exports = mongoose.model('Org', userSchema);
+orgSchema.methods.addMember = function(member_id, access) {
+  this.members = this.members.push({'user':member_id, 'access': access})
+}
+
+module.exports = mongoose.model('Org', orgSchema);
