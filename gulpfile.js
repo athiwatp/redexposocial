@@ -1,3 +1,5 @@
+"use strict"
+
 let gulp = require('gulp'),
     uglify = require('gulp-uglify'),
     cleanCSS = require('gulp-clean-css'),
@@ -10,7 +12,8 @@ let gulp = require('gulp'),
     concat = require('gulp-concat');
 
 gulp.task('sass', function() {
-  return gulp.src('src/css/*.scss')
+  return gulp.src('src/css/**/*.scss')
+    //TODO: remove source maps on distribution
     .pipe(sourcemaps.init())
     .pipe(sass().on('error', sass.logError))
     .pipe(cleanCSS({compatibility: 'ie8'}))
@@ -29,7 +32,7 @@ gulp.task('watch', function() {
 });
 
 gulp.task('htmlminify', function() {
-  return gulp.src(['./src/views/*/*.html','./src/views/*.html'])
+  return gulp.src('./src/views/**/*.html')
     .pipe(htmlmin({collapseWhitespace: true}))
     .pipe(gulp.dest('./public/views'))
 });

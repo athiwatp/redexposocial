@@ -1,10 +1,11 @@
 'use strict'
-let mongoose = require('mongoose'),
+let mongoose = require('mongoose')
 
-var userSchema = new mongoose.Schema({
+let newSchema = new mongoose.Schema({
     title: {type:String, unique: true},
     body: String,
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     comments: [{
       user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
@@ -19,4 +20,4 @@ var userSchema = new mongoose.Schema({
     auth: Boolean
 });
 
-module.exports = mongoose.model('New', userSchema);
+module.exports = mongoose.model('New', newSchema);
