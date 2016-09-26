@@ -2,9 +2,6 @@ public/css/**
 public/js/**
 public/views/**
 public/uploads/**
-<<<<<<< HEAD
 config/**
-=======
 
->>>>>>> ff4a69601c0a08e3b12384a0763ab1b2a9985ab4
 node_modules
