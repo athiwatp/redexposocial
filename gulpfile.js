@@ -1,53 +1,50 @@
-"use strict"
+'use strict'
 
 let gulp = require('gulp'),
-    uglify = require('gulp-uglify'),
     cleanCSS = require('gulp-clean-css'),
     rename = require('gulp-rename'),
     sass = require('gulp-sass'),
     nodemon = require('gulp-nodemon'),
     sourcemaps = require('gulp-sourcemaps'),
     htmlmin = require('gulp-htmlmin'),
-    minify = require('gulp-minify'),
-    concat = require('gulp-concat');
+    webpack = require('webpack-stream'),
+    concat = require('gulp-concat')
 
 gulp.task('sass', function() {
   return gulp.src('src/css/**/*.scss')
-    //TODO: remove source maps on distribution
-    .pipe(sourcemaps.init())
-    .pipe(sass().on('error', sass.logError))
-    .pipe(cleanCSS({compatibility: 'ie8'}))
-    .pipe(concat('master.css'))
-    .pipe(rename({
-            suffix: '.min'
-        }))
-    .pipe(sourcemaps.write())
-    .pipe(gulp.dest('./public/css'));
-});
+  //TODO: remove source maps on distribution
+  .pipe(sourcemaps.init())
+  .pipe(sass().on('error', sass.logError))
+  .pipe(cleanCSS({compatibility: 'ie8'}))
+  .pipe(concat('master.css'))
+  .pipe(rename({suffix: '.min'}))
+  .pipe(sourcemaps.write())
+  .pipe(gulp.dest('./public/css'))
+})
 
 gulp.task('watch', function() {
-    gulp.watch('./src/css/**/*.scss', ['sass'])
-    gulp.watch(['./src/views/**/*.html'], ['htmlminify'])
-    gulp.watch('./src/js/**/*.js',['minify'])
-});
+  gulp.watch('./src/css/**/*.scss', ['sass'])
+  gulp.watch('./src/views/**/*.html', ['htmlminify'])
+  gulp.watch(['./src/js/**/*.js','./src/js/**/*.vue'], ['webpack'])
+})
 
 gulp.task('htmlminify', function() {
-  return gulp.src('./src/views/**/*.html')
-    .pipe(htmlmin({collapseWhitespace: true}))
-    .pipe(gulp.dest('./public/views'))
-});
+  return gulp.src('src/views/**/*.html')
+  .pipe(htmlmin({collapseWhitespace: true}))
+  .pipe(gulp.dest('public/views'))
+})
 
-gulp.task('minify', function() {
-  return gulp.src('./src/js/*.js')
-    .pipe(minify({
-          ext:{
-              min:'.js'
-          },
-      }))
-    .pipe(rename({
-            suffix: '.min'
-        }))
-    .pipe(gulp.dest('./public/js'))
+//Bundle creation, minification and rename
+gulp.task('webpack', function(){
+  return gulp.src(['./src/js/auth.js','./src/js/app.js']) //Strange workaround
+  .pipe(
+    webpack(require(__dirname + '/webpack.config.js'))
+    .on('error', (err) => {
+      if (err) console.log('--- Webpack error ---\n', err)
+    })
+  )
+  .pipe(rename('bundle.js'))
+  .pipe(gulp.dest('public/js'))
 })
 
 gulp.task('start', function () {
@@ -56,6 +53,12 @@ gulp.task('start', function () {
     ext: 'js',
     env: { 'NODE_ENV': 'development' }
   })
-});
+})
 
-gulp.task('default', ['sass','htmlminify','minify','watch','start']);
+// gulp.task('restart', function () {
+//   nodemon({
+//     script: 'rs',
+//   })
+// })
+
+gulp.task('default', ['sass','htmlminify','webpack','watch','start'])

@@ -2,5 +2,6 @@ public/css/**
 public/js/**
 public/views/**
 public/uploads/**
+config/**
 
 node_modules

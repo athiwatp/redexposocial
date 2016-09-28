@@ -2,9 +2,9 @@
 
 var express = require('express'), //minimalist framwork for requests, responses, etc.
     bodyParser = require('body-parser'), //access information passed in url or body
-    nunjucks = require('nunjucks'), //view render egine
+    nunjucks = require('nunjucks'), //view render engine
     morgan = require('morgan'),
-    
+
     app = express() //initialize server
 
 let API = require("./routers/api.js"), //assign api files to variable
@@ -22,18 +22,22 @@ app.use(bodyParser.urlencoded({ extended: true })) //Get elements from URL
 app.use(morgan('dev')) //HTTP request logger middleware for node.js
 nunjucks.configure('public/views/', {
     autoescape: true,
-    express: app
+    express: app,
+    tags: {
+      blockStart: '<%',
+      blockEnd: '%>',
+      variableStart: '<$',
+      variableEnd: '$>',
+      commentStart: '<#',
+      commentEnd: '#>'
+    }
 }) //view engine configuration
 
 app.use('/api',API) //use the api
 
-app.use('/', function(req, res) {
-    res.render('index');
+app.use(function(req, res) {
+    res.sendFile(__dirname + '/public/views/index.html');
 }) //use the root site.com/ and send this
-
-app.use(function(req,res){
-  res.status(404).json({error: {errmgs: "Not found"}})
-}) //Not fount
 
 app.listen(port, function () {
   console.log('App listening on port ' + port + '!');
