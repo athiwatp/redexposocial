@@ -1,21 +1,197 @@
-html, body, h1, h2, h3, h4, div, table,main,footer,aside,article,p,ul,li {
+$lightGray: rgb(224, 224, 224);
+$gray: rgb(201, 201, 201);
+
+html, body, h1, h2, h3, h4, h5, h6, div, table,main,footer,aside,article,p,ul,li,input,button, th,td,tr {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 body {
   font-family: 'Helvetica Neue', Helvetica, sans-serif;
   font-weight: 300;
   line-height: 1.5;
-  max-width: 1200px;
+  color: rgb(33, 33, 33);
+  #resa-logo {
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+  }
 }
 ul {
   list-style: none;
 }
+main.content {
+  margin: 20px auto;
+}
+.content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.nav-menu {
+  user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  .show-more {
+    position: relative;
+    .more-options {
+      position: absolute;
+      top: 38px;
+      background: #fff;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+      padding: 10px 20px;
+      border-radius: 5px;
+      color: rgb(52, 52, 52);
+    }
+  }
+}
+.table {
+  border: 1px solid $lightGray;
+  border-radius: 5px;
+  margin: 20px 0;
+  overflow: hidden;
+  .table-elem {
+    display: block;
+    display: flex;
+    div {
+      border-bottom: 1px solid $lightGray;
+      padding: 5px 10px;
+      max-height: 35px;
+      flex-grow: 1;
+      flex-basis: 100px;
+      overflow: hidden;
+      display: inline-block;
+    }
+  }
+  .table-head {
+    .table-elem {
+      background: $gray;
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+}
 header {
   nav {
+    background: rgb(233, 122, 50);
+    font-weight: 600;
+    padding: 10px 50px;
     ul {
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      li {
+        color: rgba(255,255,255,0.8);
+        cursor: pointer;
+        a {
+          text-decoration: none;
+          color: inherit;
+        }
+        &:hover,&.active {
+          color: rgba(255,255,255,1);
+        }
+      }
+      li#resa-logo, li#resa-logo {
+        height: 30px;
+        img {
+          opacity: 0.8;
+        }
+        &.active img, img:hover {
+          opacity: 1;
+        }
+      }
     }
   }
+}
+.mini-header {
+  display: flex;
+  width: 100%;
+  input[type="text"] {
+    flex-grow: 1;
+    font-size: 1rem;
+    padding: 5px 15px;
+    margin-right: 10px;
+  }
+}
+router-view {
+  .hover {
+    position: fixed;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0,0,0,.2);
+    overflow-y: scroll;
+    .add-model {
+      background: #fff;
+      max-width: 400px;
+      border-radius: 10px;
+      margin: 50px auto;
+      padding: 20px;
+      .element {
+        margin: 5px 0;
+        display: inline-block;
+        margin-right: 20px;
+      }
+      label {
+        display: block;
+      }
+    }
+  }
+}
+button {
+  &.cancel {
+    border: 1px solid rgb(224, 57, 57);
+    color: rgb(224, 57, 57);
+    background: #fff;
+    &:active {
+      background: rgb(224, 57, 57);
+      color: #fff;
+    }
+  }
+  &.add {
+    background: rgb(98,192,88);
+    width: 100%;
+    &:active {
+      background: rgb(81, 154, 73);
+    }
+  }
+}
+label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+input {
+  font-size: 1rem;
+  outline: none;
+  border-radius: 3px;
+  padding: 5px 15px;
+  border: 1px solid $lightGray;
+}
+input[type=button], button {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 3px;
+  padding: 5px 15px;
+
+  cursor: pointer;
+}
+footer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgb(167, 167, 167);
+}
+//Animations
+.fade-transition {
+  transition: all .3s ease;
+  overflow: hidden;
+}
+/* .expand-enter defines the starting state for entering */
+/* .expand-leave defines the ending state for leaving */
+.fade-enter, .fade-leave {
+  height: 0;
+  padding: 0 10px;
+  opacity: 0;
 }
