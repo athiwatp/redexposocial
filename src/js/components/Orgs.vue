@@ -134,7 +134,7 @@ import Auth from '../auth.js'
     },
     created() {
       this.$parent.active = 1,
-      this.$http.get('http://localhost:8080/api/orgs')
+      this.$http.get(window.host + '/api/orgs')
       .then((data) => {
         this.orgs = data.body.orgs
       },(err) => {
