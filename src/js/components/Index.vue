@@ -12,7 +12,7 @@ export default {
   created() {
     if (this.$parent.user.authenticated) {
         this.$parent.active = 0
-        this.$http.get('http://localhost:8080/api/users')
+        this.$http.get(window.host + '/api/users')
         .then((data) => {
           this.users = data.body.users
         },(err) => {
