@@ -55,10 +55,6 @@ gulp.task('start', function () {
   })
 })
 
-// gulp.task('restart', function () {
-//   nodemon({
-//     script: 'rs',
-//   })
-// })
+gulp.task('build', ['sass','htmlminify','webpack'])
 
-gulp.task('default', ['sass','htmlminify','webpack','watch','start'])
+gulp.task('test', ['sass','htmlminify','webpack','watch','start'])
