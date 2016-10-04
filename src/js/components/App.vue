@@ -18,6 +18,11 @@
     </nav>
   </header>
   <router-view></router-view>
+  <footer>
+    <img class="powered" src="/static/img/logos/powered.svg" alt="" />
+    <p>Copyright (c) 2016 Copyright Red Expo Social Rights Reserved.</p>
+    <p>Developed by <a href="http://www.cesargdm.com" target="_blank">cesargdm</a></p>
+  </footer>
 </template>
 <script>
 import Auth from '../auth.js'
