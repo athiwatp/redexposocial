@@ -8,6 +8,7 @@ let orgSchema = new mongoose.Schema({
     },
     username: {type: String, unique: true, required: true},
     topics: [String],
+    image: String,
     news: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'New'

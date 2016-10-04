@@ -15,7 +15,7 @@
         </div>
       </div>
       <div class="table-body">
-        <div class="table-elem" v-for="org in orgs | filterBy searchQuery">
+        <div class="table-elem" v-for="org in orgs | filterBy searchQuery" v-link="'/orgs/' + org._id">
           <div>{{org.name.legal}}</div>
           <div>@{{org.username}}</div>
           <div>{{org.news.length}}</div>
@@ -104,55 +104,55 @@
 
 <script>
 import Auth from '../auth.js'
-  export default {
-    data() {
-      return {
-        searchQuery: '',
-        error: '',
-        addModelShow: false,
-        topic: '',
-        number: '',
-        email: '',
-        orgs: [],
-        org: {
-          name: {
-            short: '',
-            legal: ''
+
+export default {
+  data() {
+    return {
+      searchQuery: '',
+      error: '',
+      addModelShow: false,
+      topic: '',
+      number: '',
+      email: '',
+      orgs: [],
+      org: {
+        name: {
+          short: '',
+          legal: ''
+        },
+        topics: [],
+        contact: {
+          social: {
+            facebook: '',
+            twitter: '',
           },
-          topics: [],
-          contact: {
-            social: {
-              facebook: '',
-              twitter: '',
-            },
-            emails: [],
-            numbers: []
-          },
-          location: {}
-        }
-      }
-    },
-    created() {
-      this.$parent.active = 1,
-      this.$http.get(window.host + '/api/orgs')
-      .then((data) => {
-        this.orgs = data.body.orgs
-      },(err) => {
-        this.error = err
-      })
-      this.active = 0
-    },
-    methods: {
-      addOrg() {
-        console.log('ADD org');
-        this.$http.post('/api/orgs', {'org': this.org}).then((res) => {
-          this.addModelShow = false
-          this.org = {}
-          this.orgs.push(res.body.org)
-        }, (err) => {
-          this.error = err
-        })
+          emails: [],
+          numbers: []
+        },
+        location: {}
       }
     }
+  },
+  created() {
+    this.$parent.active = 1,
+    this.$http.get(window.host + '/api/orgs')
+    .then((data) => {
+      this.orgs = data.body.orgs
+    },(err) => {
+      this.error = err
+    })
+    this.active = 0
+  },
+  methods: {
+    addOrg() {
+      this.$http.post('/api/orgs', {'org': this.org}).then((res) => {
+        this.addModelShow = false
+        this.org = {}
+        this.orgs.push(res.body.org)
+      }, (err) => {
+        this.error = err
+      })
+    }
   }
+}
 </script>

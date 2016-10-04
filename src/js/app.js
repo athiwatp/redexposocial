@@ -6,6 +6,7 @@ import VueResource from 'vue-resource'
 
 import App from './components/App.vue'
 import Orgs from './components/Orgs.vue'
+import Org from './components/Org.vue'
 import Index from './components/Index.vue'
 import Events from './components/Events.vue'
 import News from './components/News.vue'
@@ -39,6 +40,9 @@ router.map({
   },
   '/orgs': {
     component: Orgs
+  },
+  '/orgs/:id': {
+    component: Org
   },
   '/events': {
     component: Events

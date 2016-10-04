@@ -4,6 +4,8 @@ let express = require('express'), //Express
     jwt = require('jsonwebtoken'), //Package for authentication tokens
     multer = require('multer'), //Package for managing file uploads
     mongoose = require('mongoose'),
+    fs = require('fs'),
+    bodyParser = require('body-parser'),
     router = express.Router() //Express router
 
 let User = require("../models/user.js"), //Model for users
@@ -159,6 +161,37 @@ router.route('/orgs/:org_id')
 })
 .put(function(req,res){
   res.status(500).json({})
+})
+
+router.route('/orgs/:org_id/photo')
+.post(function(req,res){
+  if (!req.body.img)
+    return res.status(400)
+
+  var matches = req.body.img.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+      extension = matches[1].split('/')[1],
+      random = Math.floor((Math.random() * 10) + 1),
+      fileName = random + '' + Date.now() + '.' + extension
+
+  var data = matches[0].replace(/^data:image\/\w+;base64,/, '')
+
+  fs.writeFile(__dirname + '/../public/uploads/' + fileName, data, {encoding: 'base64'}, function(err){
+    if (err) {
+      return res.status(500)
+    }
+    Org.findById(req.params.org_id)
+    .exec(function(err, org) {
+      var path = "/static/uploads/" + fileName
+      org.image = path
+      org.save(function(err){
+        if (err)
+          return res.status(500)
+        res.status(201).json({'path': path})
+      })
+    })
+
+  })
+
 })
 
 router.route('/orgs/:org_id/members')
