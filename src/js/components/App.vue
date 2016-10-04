@@ -3,7 +3,7 @@
     <nav>
       <div class="content">
         <ul class="nav-menu">
-          <li v-bind:class="{ 'active': active == 0}" id="resa-logo"><a v-link="'index'"><img src="/static/img/logos/resa.svg" alt="RESA"/></a></li>
+          <li v-bind:class="{ 'active': active == 0}" id="resa-logo"><a v-link="'/'"><img src="/static/img/logos/resa.svg" alt="RESA"/></a></li>
           <li v-bind:class="{ 'active': active == 1}" v-if="user.authenticated"><a v-link="'/orgs'">Organizaciones</a></li>
           <li v-bind:class="{ 'active': active == 2}" v-if="user.authenticated"><a v-link="'/events'">Eventos</a></li>
           <li v-bind:class="{ 'active': active == 3}" v-if="user.authenticated"><a v-link="'/news'">Noticias</a></li>
