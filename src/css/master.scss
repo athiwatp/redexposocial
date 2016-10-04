@@ -1,7 +1,8 @@
 $lightGray: rgb(224, 224, 224);
 $gray: rgb(201, 201, 201);
+$green: rgb(75, 185, 22);
 
-html, body, h1, h2, h3, h4, h5, h6, div, table,main,footer,aside,article,p,ul,li,input,button, th,td,tr {
+html,body,h1,h2,h3,h4,h5,h6,div, table,main,footer,aside,article,p,ul,li,input,button, th,td,tr,a {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -16,6 +17,9 @@ body {
     height: 30px;
     display: inline-block;
   }
+}
+button.save {
+  background: $green;
 }
 .org-image {
   width: 200px;
@@ -62,7 +66,7 @@ main.content {
       position: absolute;
       top: 38px;
       background: #fff;
-      box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.25);
       padding: 10px 20px;
       border-radius: 5px;
       color: rgb(52, 52, 52);
@@ -109,7 +113,7 @@ header {
       justify-content: space-between;
       align-items: center;
       li {
-        color: rgba(255,255,255,0.8);
+        color: rgba(255,255,255,0.65);
         cursor: pointer;
         a {
           text-decoration: none;
@@ -139,6 +143,33 @@ header {
     font-size: 1rem;
     padding: 5px 15px;
     margin-right: 10px;
+  }
+}
+.model.editable {
+  .title {
+    font-size: 2rem;
+  }
+  h3 {
+    border-top: 1px solid $gray;
+    padding-top: 10px;
+    margin-bottom: 10px;
+  }
+  .section {
+    display: flex;
+    flex-grow: 1;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .element {
+    margin-right: 10px;
+    label, input {
+      display: block;
+      transition: 0.2s;
+    }
+    input[readonly="true"], input[readonly] {
+      border: 1px solid transparent;
+      padding: 5px 0;
+    }
   }
 }
 router-view {
@@ -172,6 +203,11 @@ button {
     border: 1px solid rgb(224, 57, 57);
     color: rgb(224, 57, 57);
     background: #fff;
+    &.filled {
+      border: none;
+      background: rgb(219, 39, 39);
+      color: #fff;
+    }
     &:active {
       background: rgb(224, 57, 57);
       color: #fff;

@@ -159,9 +159,6 @@ router.route('/orgs/:org_id')
       res.status(200).json({'org': org})
   })
 })
-.put(function(req,res){
-  res.status(500).json({})
-})
 
 router.route('/orgs/:org_id/photo')
 .post(function(req,res){
@@ -208,7 +205,7 @@ router.route('/orgs/:org_id/members')
   })
 })
 .post(function(req,res){
-  res.status(500).json({})
+  res.status(500).json({'message': "Not yet implemented"})
 })
 
 router.route('/orgs/:org_id/news')
@@ -327,7 +324,7 @@ router.route('/events')
   })
 })
 .post(function(req,res){
-  res.status(500).json({})
+  res.status(500).json({'message': "Not yet implemented"})
 })
 
 //TODO: get events by location queries, city name, coordinates, country
@@ -347,34 +344,34 @@ router.route('/events/:event_id')
   })
 })
 .put(function(req,res){
-  res.status(500).json({})
+  res.status(500).json({'message': "Not yet implemented"})
 })
 .delete(function(req,res){
-  res.status(500).json({})
+  res.status(500).json({'message': "Not yet implemented"})
 })
 
 router.route('/events/:event_id/attendance')
 .get(function(req,res){
-  res.status(500).json({})
+  res.status(500).json({'message': "Not yet implemented"})
 })
 .post(function(req,res){
-  res.status(500).json({})
+  res.status(500).json({'message': "Not yet implemented"})
 })
 
 router.route('/events/:event_id/comments')
 .get(function(req,res){
-  res.status(500).json({})
+  res.status(500).json({'message': "Not yet implemented"})
 })
 .post(function(req,res){
-  res.status(500).json({})
+  res.status(500).json({'message': "Not yet implemented"})
 })
 
 router.route('/events/:event_id/likes')
 .get(function(req,res){
-  res.status(500).json({})
+  res.status(500).json({'message': "Not yet implemented"})
 })
 .post(function(req,res){
-  res.status(500).json({})
+  res.status(500).json({'message': "Not yet implemented"})
 })
 
 
@@ -398,6 +395,19 @@ router.route('/users')
   User.find({})
   .exec(function(err,users){
     res.json({users: users});
+  })
+})
+
+router.route('/orgs/:org_id')
+.put(function(req,res){
+  delete req.body.org._id
+
+  Org.findByIdAndUpdate(req.params.org_id, {$set: req.body.org}, {upsert: true})
+  .exec(function(err, org){
+    if (err) {
+      return res.status(500).json({'err':err})
+    }
+    res.status(200).json({'message': "Updated", 'org': org})
   })
 })
 
