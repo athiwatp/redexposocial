@@ -1,8 +1,8 @@
 <template>
-  <main class="content"  v-if="!$parent.user.authenticated">
+  <main class="content" v-if="!$parent.user.authenticated">
     Not authenticated
   </main>
-  <main class="content"  v-if="$parent.user.authenticated">
+  <main class="content" v-if="$parent.user.authenticated">
     Authenticated
   </main>
 </template>

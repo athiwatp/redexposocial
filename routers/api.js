@@ -3,8 +3,8 @@
 let express = require('express'), //Express
     jwt = require('jsonwebtoken'), //Package for authentication tokens
     multer = require('multer'), //Package for managing file uploads
-    mongoose = require('mongoose'),
-    fs = require('fs'),
+    mongoose = require('mongoose'), //db connector
+    fs = require('fs'), //file writer
     bodyParser = require('body-parser'),
     router = express.Router() //Express router
 
@@ -85,7 +85,7 @@ router.route('/authenticate')
         if (!user.comparePassword(req.body.password))
           res.status(400).json({message: "Authentication failed. Wrong user or password."}); //If passwords don't match
         else {
-          let token = jwt.sign({'_id': user._id}, config.secret, {expiresIn: 604800}) //Sign token with the user id, set the secret password for ecryption, and set the expiration in 7 days
+          let token = jwt.sign({'_id': user._id}, config.secret, {expiresIn: 604800000}) //Sign token with the user id, set the secret password for ecryption, and set the expiration in 2 days
           res.status(200).json({'message': "Logged in, yay!", 'user': {'_id': user._id, 'name': user.name, 'username': user.username}, 'token': token })
         }
       }
