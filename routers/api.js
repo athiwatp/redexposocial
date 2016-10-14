@@ -3,8 +3,8 @@
 let express = require('express'), //Express
     jwt = require('jsonwebtoken'), //Package for authentication tokens
     multer = require('multer'), //Package for managing file uploads
-    mongoose = require('mongoose'),
-    fs = require('fs'),
+    mongoose = require('mongoose'), //db connector
+    fs = require('fs'), //file writer
     bodyParser = require('body-parser'),
     router = express.Router() //Express router
 
@@ -85,7 +85,7 @@ router.route('/authenticate')
         if (!user.comparePassword(req.body.password))
           res.status(400).json({message: "Authentication failed. Wrong user or password."}); //If passwords don't match
         else {
-          let token = jwt.sign({'_id': user._id}, config.secret, {expiresIn: 604800}) //Sign token with the user id, set the secret password for ecryption, and set the expiration in 7 days
+          let token = jwt.sign({'_id': user._id}, config.secret, {expiresIn: 604800000}) //Sign token with the user id, set the secret password for ecryption, and set the expiration in 2 days
           res.status(200).json({'message': "Logged in, yay!", 'user': {'_id': user._id, 'name': user.name, 'username': user.username}, 'token': token })
         }
       }
@@ -210,17 +210,19 @@ router.route('/orgs/:org_id/members')
 
 router.route('/orgs/:org_id/news')
 .get(function(req,res){
-  res.status(500).json({'message': "Not yet supported"})
-})
-.post(function(req,res){
-  res.status(500).json({'message': "Not yet supported"})
+  News.find({org: req.params.org_id})
+  .exec(function(err, news){
+    if (err)
+      res.status(500).json({'error': err})
+    else if (!news || news.length == 0)
+      res.status(404).json({'error': {'message':"No news found"}})
+    else
+      res.status(200).json({news: news})
+  })
 })
 
 router.route('/orgs/:org_id/events')
 .get(function(req,res){
-  res.status(500).json({'message': "Not yet supported"})
-})
-.post(function(req,res){
   res.status(500).json({'message': "Not yet supported"})
 })
 
@@ -257,6 +259,7 @@ router.route('/users/:user_id')
 router.route('/news')
 .get(function(req,res){
   New.find({})
+  .populate('org author', 'name username')
   .exec(function(err,news){
     if (err)
       res.status(500).json({'error': err})
@@ -267,8 +270,25 @@ router.route('/news')
   })
 })
 .post(function(req,res){
-  //TODO: add createdBy
-  res.status(500).json({'message': "Not yet supported"})
+  User.findById(req._uid)
+  .exec(function(err,user){
+    if (err)
+      res.status(500).json({'error': err})
+    else {
+      if (user.access<=0) { //Or admin of the page
+        res.status(301).json({message: "You are not admin of the org, or general admin >:|"})
+      } else {
+        req.body.new.author = req._uid
+        new New(req.body.new)
+        .save(function(err, newObj){
+          if (err)
+            res.status(500).json({'error': err})
+          else
+            res.status(201).json({new: newObj, message: "Successfully created new new"})
+        })
+      }
+    }
+  })
 })
 
 router.route('/news/:new_id')

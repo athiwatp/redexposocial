@@ -40,7 +40,7 @@ export default {
   },
 
   checkAuth() {
-    if (localStorage.getItem('token'))
+    if (DecodeToken(localStorage.getItem('token')).exp > parseInt(Date.now())/1000)
       return true
     return false
   }

@@ -3,15 +3,16 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import VueResource from 'vue-resource'
+import DecodeToken from 'jwt-decode'
 
-import App from './components/App.vue'
-import Orgs from './components/Orgs.vue'
-import Org from './components/Org.vue'
-import Index from './components/Index.vue'
-import Events from './components/Events.vue'
-import News from './components/News.vue'
-import Auth from './auth.js'
-import Login from './components/Login.vue'
+import App from "./components/App.vue"
+import Orgs from "./components/Orgs.vue"
+import Org from "./components/Org.vue"
+import Index from "./components/Index.vue"
+import Events from "./components/Events.vue"
+import News from "./components/News.vue"
+import Auth from "./auth.js"
+import Login from "./components/Login.vue"
 
 Vue.use(VueResource)
 Vue.use(VueRouter)
@@ -22,10 +23,16 @@ window.host = 'http://45.55.94.138'
 
 Vue.http.interceptors.push((request, next) => {
 
-  if (localStorage.getItem('token'))
-    Vue.http.headers.common['x-access-token'] = localStorage.getItem('token')
-  else
-    console.log('No token')
+  let token = localStorage.getItem('token')
+
+  if (!token && request.url.split('/').pop() != "authenticate") {
+    window.location.href = "/"
+  } else if (request.url.split('/').pop() != "authenticate") {
+    if (DecodeToken(token).exp < parseInt(Date.now())/1000) {
+      window.location.href = "/login"
+    }
+    Vue.http.headers.common['x-access-token'] = token
+  }
 
   next()
 })
