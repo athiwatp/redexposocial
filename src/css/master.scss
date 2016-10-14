@@ -1,8 +1,9 @@
 $lightGray: rgb(224, 224, 224);
 $gray: rgb(201, 201, 201);
 $green: rgb(75, 185, 22);
+$orange: rgb(233, 122, 50);
 
-html,body,h1,h2,h3,h4,h5,h6,div, table,main,footer,aside,article,p,ul,li,input,button, th,td,tr,a {
+html,body,h1,h2,h3,h4,h5,h6,div, table,main,footer,aside,article,p,ul,li,input,button, th,td,tr,a, textarea {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -50,6 +51,9 @@ ul {
 }
 main.content {
   margin: 20px auto;
+  a {
+    color: $orange;
+  }
 }
 .content {
   max-width: 1000px;
@@ -69,6 +73,8 @@ main.content {
       box-shadow: 0px 0px 10px rgba(0,0,0,0.25);
       padding: 10px 20px;
       border-radius: 5px;
+      right: 0;
+      width: 160px;
       color: rgb(52, 52, 52);
     }
   }
@@ -109,7 +115,7 @@ a {
 }
 header {
   nav {
-    background: rgb(233, 122, 50);
+    background: $orange;
     font-weight: 600;
     padding: 10px 50px;
     ul {
@@ -187,10 +193,63 @@ router-view {
       border-radius: 10px;
       margin: 50px auto;
       padding: 20px;
+      position: relative;
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .selector {
+        position: relative;
+        height: 30px;
+        display: flex;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        padding: 5px 15px;
+        align-items: center;
+        input {
+          border: none;
+          padding: 0;
+        }
+        > p {
+          padding: 0;
+          flex-shrink: 0;
+        }
+        .selections {
+          top: 30px;
+          background: #FFF;
+          position: absolute;
+          max-height: 200px;
+          overflow-y: scroll;
+          padding: 5px;
+          left: 0;
+          border-radius: 5px;
+          box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+          p {
+            cursor: pointer;
+            border-bottom: 1px solid $gray;
+            padding: 3px 5px;
+          }
+        }
+      }
+      .location-wrapper {
+        display: flex;
+        input {
+          flex-grow: 1;
+          margin-right: 10px;
+        }
+        input:last-child {
+          margin-right: 0;
+        }
+      }
       .element {
         margin: 5px 0;
         display: inline-block;
         margin-right: 20px;
+        width: 100%;
+        input, textarea {
+          width: 100%;
+        }
       }
       label {
         display: block;
@@ -225,7 +284,7 @@ label {
   font-size: 0.85rem;
   font-weight: 600;
 }
-input {
+input, textarea {
   font-size: 1rem;
   outline: none;
   border-radius: 3px;

@@ -1,6 +1,9 @@
 <template>
   <main class="content">
-    <h1>Events</h1>
+    <div class="mini-header">
+      <input type="text" v-model="searchQuery" placeholder="Buscar...">
+      <!-- <button type="text" @click="addModelShow = true">Nuevo evento</button> -->
+    </div>
   </main>
 </template>
 

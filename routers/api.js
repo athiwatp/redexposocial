@@ -210,17 +210,19 @@ router.route('/orgs/:org_id/members')
 
 router.route('/orgs/:org_id/news')
 .get(function(req,res){
-  res.status(500).json({'message': "Not yet supported"})
-})
-.post(function(req,res){
-  res.status(500).json({'message': "Not yet supported"})
+  News.find({org: req.params.org_id})
+  .exec(function(err, news){
+    if (err)
+      res.status(500).json({'error': err})
+    else if (!news || news.length == 0)
+      res.status(404).json({'error': {'message':"No news found"}})
+    else
+      res.status(200).json({news: news})
+  })
 })
 
 router.route('/orgs/:org_id/events')
 .get(function(req,res){
-  res.status(500).json({'message': "Not yet supported"})
-})
-.post(function(req,res){
   res.status(500).json({'message': "Not yet supported"})
 })
 
@@ -257,6 +259,7 @@ router.route('/users/:user_id')
 router.route('/news')
 .get(function(req,res){
   New.find({})
+  .populate('org author', 'name username')
   .exec(function(err,news){
     if (err)
       res.status(500).json({'error': err})
@@ -267,8 +270,25 @@ router.route('/news')
   })
 })
 .post(function(req,res){
-  //TODO: add createdBy
-  res.status(500).json({'message': "Not yet supported"})
+  User.findById(req._uid)
+  .exec(function(err,user){
+    if (err)
+      res.status(500).json({'error': err})
+    else {
+      if (user.access<=0) { //Or admin of the page
+        res.status(301).json({message: "You are not admin of the org, or general admin >:|"})
+      } else {
+        req.body.new.author = req._uid
+        new New(req.body.new)
+        .save(function(err, newObj){
+          if (err)
+            res.status(500).json({'error': err})
+          else
+            res.status(201).json({new: newObj, message: "Successfully created new new"})
+        })
+      }
+    }
+  })
 })
 
 router.route('/news/:new_id')

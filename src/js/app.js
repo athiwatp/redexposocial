@@ -21,8 +21,6 @@ Vue.options.replace = false
 
 window.host = 'http://45.55.94.138'
 
-//604800
-
 Vue.http.interceptors.push((request, next) => {
 
   let token = localStorage.getItem('token')

@@ -2,13 +2,13 @@
   <main class="content" id="addOrg">
     <div class="mini-header">
       <input type="text" v-model="searchQuery" placeholder="Buscar...">
-      <button type="text" @click="addModelShow = true">Add org</button>
+      <button type="text" @click="addModelShow = true">Nueva org</button>
     </div>
     <div class="table">
       <div class="table-head">
         <div class="table-elem">
-          <div>Name</div>
-          <div>username</div>
+          <div>Nombre</div>
+          <div>Nombre de usuario</div>
           <div>Noticias</div>
           <div>Eventos</div>
           <div>Miembros</div>
@@ -27,7 +27,8 @@
   </main>
   <div class="hover" v-if="addModelShow" transition="fade">
     <div class="add-model">
-      <div>
+      <div class="header">
+        <h1>Organización</h1>
         <button type="button" class="cancel" @click="addModelShow = false">Cancelar</button>
       </div>
       <div class="element">
