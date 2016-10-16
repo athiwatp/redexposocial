@@ -2,6 +2,6 @@ public/css/**
 public/js/**
 public/views/**
 public/uploads/**
-config/**
+config/config.js
 
 node_modules

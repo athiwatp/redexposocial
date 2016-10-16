@@ -8,11 +8,11 @@ let express = require('express'), //Express
     bodyParser = require('body-parser'),
     router = express.Router() //Express router
 
-let User = require(__dirname + "/../models/user.js"), //Model for users
-    Org = require(__dirname + "/../models/org.js"), //Model for Organizations
-    New = require(__dirname + "/../models/new.js"),
-    Event = require(__dirname + "/../models/event.js"),
-    config = require(__dirname + "/../config/config.js") //Database connection, and secret password
+let User = require("../models/user.js"), //Model for users
+    Org = require("../models/org.js"), //Model for Organizations
+    New = require("../models/new.js"),
+    Event = require("../models/event.js"),
+    config = require("../config/config.js") //Database connection, and secret password
 
 let storage = multer.diskStorage({ //Storage helper
     destination: function (req, file, cb) { //File uploads destination
@@ -211,7 +211,6 @@ router.route('/orgs/:org_id/members')
 router.route('/orgs/:org_id/news')
 .get(function(req,res){
   News.find({org: req.params.org_id})
-  .sort("-id")
   .exec(function(err, news){
     if (err)
       res.status(500).json({'error': err})
@@ -295,7 +294,6 @@ router.route('/news')
 router.route('/news/:new_id')
 .get(function(req,res){
   New.findById(req.params.new_id)
-  .populate('org author', 'name username image')
   .exec(function(err,newObject){
     if (err)
       res.status(500).json({'error': err})

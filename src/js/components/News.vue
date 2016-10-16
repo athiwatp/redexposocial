@@ -15,12 +15,12 @@
         </div>
       </div>
       <div class="table-body">
-        <div class="table-elem" v-for="new in news | filterBy searchQuery" v-link="'/news/' + new._id">
-          <div>{{new.title}}</div>
-          <div>{{new.date}}</div>
-          <div>{{new.org.name.short}}</div>
-          <div>{{new.tags}}</div>
-          <div>{{new.author.username}}</div>
+        <div class="table-elem" v-for="newObject in news | filterBy searchQuery" v-link="'/news/' + newObject._id">
+          <div><p v-if="newObject.title">{{newObject.title}}</p></div>
+          <div><p v-if="newObject.date">{{newObject.date}}</p></div>
+          <div><p v-if="newObject.org">{{newObject.org.name.short}}</p></div>
+          <div><p v-if="newObject.tags">{{newObject.tags}}</p></div>
+          <div><p v-if="newObject.author">{{newObject.author.username}}</p></div>
         </div>
       </div>
     </div>
@@ -33,37 +33,37 @@
       </div>
       <div class="element">
         <label for="title">Título</label>
-        <input type="text" v-model="new.title" id="title">
+        <input type="text" v-model="newObject.title" id="title">
       </div>
       <div class="element">
         <label for="body">Cuerpo</label>
-        <textarea id="body" v-model="new.body"></textarea>
+        <textarea id="body" v-model="newObject.body"></textarea>
       </div>
       <div class="element">
         <label for="date">Fecha</label>
-        <input type="date" v-model="new.date" id="date">
+        <input type="date" v-model="newObject.date" id="date">
       </div>
       <div class="element">
         <label for="location">Lugar</label>
         <div class="location-wrapper">
-          <input type="text" v-model="new.location.city" placeholder="Ciudad">
-          <input type="text" v-model="new.location.state" placeholder="Estado">
-          <input type="text" v-model="new.location.country" placeholder="País">
+          <input type="text" v-model="newObject.location.city" placeholder="Ciudad">
+          <input type="text" v-model="newObject.location.state" placeholder="Estado">
+          <input type="text" v-model="newObject.location.country" placeholder="País">
         </div>
       </div>
       <div class="element">
         <label for="org">Organización</label>
         <div class="selector">
           <p>{{displayOrg}}</p>
-          <input type="text" id="org" class="filter" @focus="selectorShow=true">
+          <input type="text" id="org" class="filter" @focus="selectorShow=true" v-model="orgQuery">
           <div class="selections" v-show="selectorShow">
-            <p v-for="org in orgs | filterBy orgQuery" @click="setOrg(this.org)">{{org.name.short}}</p>
+            <p v-for="org in filteredOrgs" @click="setOrg(this.org)">{{org.name.short}}</p>
           </div>
         </div>
       </div>
       <!-- <div class="element">
         <label for="">Imagen</label>
-        <input type="file" v-model="new.images[0]" placeholder="">
+        <input type="file" v-model="newObject.images[0]" placeholder="">
       </div> -->
       <button type="button" v-on:click="addNew()" class="add">Añadir noticia</button>
     </div>
@@ -75,11 +75,12 @@
     data() {
       return {
         news: [],
-        new: {
+        newObject: {
           org: null,
           images: [],
           location: {}
         },
+        orgQuery: null,
         displayOrg: null,
         orgs: [],
         users: [],
@@ -89,15 +90,15 @@
     },
     methods: {
       setOrg(org) {
-        this.new.org = org._id
+        this.newObject.org = org._id
         this.displayOrg = org.name.short
         this.selectorShow = false
       },
       addNew() {
-        this.$http.post('/api/news', {'new': this.new}).then((res) => {
+        this.$http.post('/api/news', {'newObject': this.newObject}).then((res) => {
           this.addModelShow = false
-          this.new = {}
-          this.news.push(res.body.new)
+          this.newObject = {}
+          this.news.push(res.body.newObject)
         }, (err) => {
           this.error = err
         })

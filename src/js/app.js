@@ -13,12 +13,12 @@ import Events from "./components/Events.vue"
 import News from "./components/News.vue"
 import Auth from "./auth.js"
 import Login from "./components/Login.vue"
+import MyInfo from "./components/MyInfo.vue"
 
 Vue.use(VueResource)
 Vue.use(VueRouter)
 
 Vue.options.replace = false
-
 window.host = 'http://45.55.94.138'
 
 Vue.http.interceptors.push((request, next) => {
@@ -56,6 +56,9 @@ router.map({
   },
   '/news': {
     component: News
+  },
+  '/my-info': {
+    component: MyInfo
   },
   '/login': {
     component: Login

@@ -1,4 +1,3 @@
 module.exports = {
-  'url' : 'mongodb://localhost/musement',
-  'secret': '4LlYoUneed15Love<3Tararara'
-};
+  secret: "r3d-ExP0?[{s0C1Al." //Real password
+}
