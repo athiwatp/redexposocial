@@ -295,6 +295,7 @@ router.route('/news')
 router.route('/news/:new_id')
 .get(function(req,res){
   New.findById(req.params.new_id)
+  .populate('org author', 'name username image')
   .exec(function(err,newObject){
     if (err)
       res.status(500).json({'error': err})
