@@ -8,11 +8,11 @@ let express = require('express'), //Express
     bodyParser = require('body-parser'),
     router = express.Router() //Express router
 
-let User = require("../models/user.js"), //Model for users
-    Org = require("../models/org.js"), //Model for Organizations
-    New = require("../models/new.js"),
-    Event = require("../models/event.js"),
-    config = require("../config/config.js") //Database connection, and secret password
+let User = require(__dirname + "/../models/user.js"), //Model for users
+    Org = require(__dirname + "/../models/org.js"), //Model for Organizations
+    New = require(__dirname + "/../models/new.js"),
+    Event = require(__dirname + "/../models/event.js"),
+    config = require(__dirname + "/../config/config.js") //Database connection, and secret password
 
 let storage = multer.diskStorage({ //Storage helper
     destination: function (req, file, cb) { //File uploads destination
