@@ -6,6 +6,7 @@ let orgSchema = new mongoose.Schema({
       short: {type: String, unique: true, required: true},
       legal: {type: String, unique: true}
     },
+    bio: String, //limit to 140c
     username: {type: String, unique: true, required: true},
     topics: [String],
     image: String,
