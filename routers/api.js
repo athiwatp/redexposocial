@@ -211,6 +211,7 @@ router.route('/orgs/:org_id/members')
 router.route('/orgs/:org_id/news')
 .get(function(req,res){
   News.find({org: req.params.org_id})
+  .sort("-id")
   .exec(function(err, news){
     if (err)
       res.status(500).json({'error': err})
