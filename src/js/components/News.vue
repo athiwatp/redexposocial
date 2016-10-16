@@ -15,59 +15,59 @@
         </div>
       </div>
       <div class="table-body">
-        <div class="table-elem" v-for="newObject in news" v-link="'/news/' + newObject._id">
-          <div>{{newObject.title}}</div>
-          <div>{{newObject.date}}</div>
-          <div>{{newObject.org.name.short}}</div>
-          <div>{{newObject.tags}}</div>
-          <div>{{newObject.author.username}}</div>
+        <div class="table-elem" v-for="newObject in news | filterBy searchQuery" v-link="'/news/' + newObject._id">
+          <div><p v-if="newObject.title">{{newObject.title}}</p></div>
+          <div><p v-if="newObject.date">{{newObject.date}}</p></div>
+          <div><p v-if="newObject.org">{{newObject.org.name.short}}</p></div>
+          <div><p v-if="newObject.tags">{{newObject.tags}}</p></div>
+          <div><p v-if="newObject.author">{{newObject.author.username}}</p></div>
         </div>
-      </div>
-    </div>
-    <div class="hover" v-if="addModelShow" transition="fade">
-      <div class="add-model">
-        <div class="header">
-          <h1>Noticia</h1>
-          <button type="button" class="cancel" @click="addModelShow=false">Cancelar</button>
-        </div>
-        <div class="element">
-          <label for="title">Título</label>
-          <input type="text" v-model="newObject.title" id="title">
-        </div>
-        <div class="element">
-          <label for="body">Cuerpo</label>
-          <textarea id="body" v-model="newObject.body"></textarea>
-        </div>
-        <div class="element">
-          <label for="date">Fecha</label>
-          <input type="date" v-model="newObject.date" id="date">
-        </div>
-        <div class="element">
-          <label for="location">Lugar</label>
-          <div class="location-wrapper">
-            <input type="text" v-model="newObject.location.city" placeholder="Ciudad">
-            <input type="text" v-model="newObject.location.state" placeholder="Estado">
-            <input type="text" v-model="newObject.location.country" placeholder="País">
-          </div>
-        </div>
-        <div class="element">
-          <label for="org">Organización</label>
-          <div class="selector">
-            <p>{{displayOrg}}</p>
-            <input type="text" id="org" class="filter" @focus="selectorShow=true" v-model="orgQuery">
-            <div class="selections" v-show="selectorShow">
-              <p v-for="org in filteredOrgs" @click="setOrg(this.org)">{{org.name.short}}</p>
-            </div>
-          </div>
-        </div>
-        <!-- <div class="element">
-          <label for="">Imagen</label>
-          <input type="file" v-model="newObject.images[0]" placeholder="">
-        </div> -->
-        <button type="button" v-on:click="addNew()" class="add">Añadir noticia</button>
       </div>
     </div>
   </main>
+  <div class="hover" v-if="addModelShow" transition="fade">
+    <div class="add-model">
+      <div class="header">
+        <h1>Noticia</h1>
+        <button type="button" class="cancel" @click="addModelShow=false">Cancelar</button>
+      </div>
+      <div class="element">
+        <label for="title">Título</label>
+        <input type="text" v-model="newObject.title" id="title">
+      </div>
+      <div class="element">
+        <label for="body">Cuerpo</label>
+        <textarea id="body" v-model="newObject.body"></textarea>
+      </div>
+      <div class="element">
+        <label for="date">Fecha</label>
+        <input type="date" v-model="newObject.date" id="date">
+      </div>
+      <div class="element">
+        <label for="location">Lugar</label>
+        <div class="location-wrapper">
+          <input type="text" v-model="newObject.location.city" placeholder="Ciudad">
+          <input type="text" v-model="newObject.location.state" placeholder="Estado">
+          <input type="text" v-model="newObject.location.country" placeholder="País">
+        </div>
+      </div>
+      <div class="element">
+        <label for="org">Organización</label>
+        <div class="selector">
+          <p>{{displayOrg}}</p>
+          <input type="text" id="org" class="filter" @focus="selectorShow=true" v-model="orgQuery">
+          <div class="selections" v-show="selectorShow">
+            <p v-for="org in filteredOrgs" @click="setOrg(this.org)">{{org.name.short}}</p>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="element">
+        <label for="">Imagen</label>
+        <input type="file" v-model="newObject.images[0]" placeholder="">
+      </div> -->
+      <button type="button" v-on:click="addNew()" class="add">Añadir noticia</button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -101,13 +101,6 @@
           this.news.push(res.body.newObject)
         }, (err) => {
           this.error = err
-        })
-      }
-    },
-    computed: {
-      filteredOrgs: function () {
-        return this.orgs.filter(function (org) {
-          return org.indexOf(this.orgQuery) >= 0
         })
       }
     },

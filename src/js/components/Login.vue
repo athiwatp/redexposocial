@@ -3,7 +3,7 @@
     <div>
       <h2>Log In</h2>
       <div class="form-group">
-        <input type="text" placeholder="Usuario o email" v-model="user.username" v-on:keyup.enter="addTodo">
+        <input type="text" placeholder="Usuario o email" v-model="user.username" v-on:keyup.enter="submit()">
       </div>
       <div class="form-group">
         <input type="password" v-model="user.password" v-on:keyup.enter="submit()">

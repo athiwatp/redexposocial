@@ -7,11 +7,11 @@
           <li v-bind:class="{'active': active == 0}" id="resa-logo"><a v-link="'/'"><img src="/static/img/logos/resa.svg" alt="RESA"/></a></li>
           <li v-bind:class="{'active': active == 1}" v-if="user.authenticated"><a v-link="'/orgs'">Organizaciones</a></li>
           <li v-bind:class="{'active': active == 2}" v-if="user.authenticated"><a v-link="'/events'">Eventos</a></li>
-          <li v-bind:class="{'active': active == 3}" v-if="user.authenticated"><a v-link="'/news'">Noticias</a></li>
-          <li v-bind:class="{'active': active == 4}" v-if="!user.authenticated"><a v-link="'/login'">Login</a></li>
-          <li v-bind:class="{'active': active == 5}" v-if="user.authenticated" class="show-more"><a @click="showMore = !showMore">Mas</a>
+          <li :class="{'active': active == 3}" v-if="user.authenticated"><a v-link="'/news'">Noticias</a></li>
+          <li :class="{'active': active == 4}" v-if="!user.authenticated"><a v-link="'/login'">Login</a></li>
+          <li :class="{'active': active == 5}" v-if="user.authenticated" class="show-more"><a @click="showMore = !showMore">Mas</a>
             <div class="more-options" v-show="showMore">
-              <p><a>Mi información</a></p>
+              <p><a v-link="'/my-info'">Mi información</a></p>
               <p><a @click="logout()">Logout</a></p>
             </div>
           </li>
@@ -29,8 +29,8 @@
 </template>
 
 <script>
-var Auth = require('../auth.js')
-var DecodeToken = require('jwt-decode')
+import Auth from '../auth.js'
+import DecodeToken from 'jwt-decode'
 
 export default {
     data() {
@@ -39,10 +39,6 @@ export default {
         user: { authenticated: false },
         active: 0
       }
-    },
-    components: {
-      Auth,
-      DecodeToken
     },
     created() {
 
