@@ -1,12 +1,14 @@
 <template>
-  <main class="content" v-if="!$parent.user.authenticated">
-    Not authenticated
-  </main>
-  <main class="content" v-if="$parent.user.authenticated">
-    <h1>Bienvenido a RedExpoSocial</h1>
-    <p>Aquí podrás administrar la información de las organizaciones de las que eres miembro, podrás añadir eventos y noticias que serán aprobadas por la RedExpoSocial para su publicación.</p>
-    <p>¿Te gustaría mejorar este sitio? Envíame un <a href="mailto:cesargdm@icloud.com">correo</a> o puedes encontrar <a href="https://github.com/cesargdm/red-expo-social" target="_blank">aquí</a> el repositorio.</p>
-  </main>
+  <body>
+    <main class="content" v-if="!$parent.user.authenticated">
+      Not authenticated
+    </main>
+    <main class="content" v-if="$parent.user.authenticated">
+      <h1>Bienvenido a RedExpoSocial</h1>
+      <p>Aquí podrás administrar la información de las organizaciones de las que eres miembro, podrás añadir eventos y noticias que serán aprobadas por la RedExpoSocial para su publicación.</p>
+      <p>¿Te gustaría mejorar este sitio? Envíame un <a href="mailto:cesargdm@icloud.com">correo</a> o puedes encontrar <a href="https://github.com/cesargdm/red-expo-social" target="_blank">aquí</a> el repositorio.</p>
+    </main>
+  </body>
 </template>
 
 <script>

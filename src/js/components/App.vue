@@ -1,4 +1,5 @@
 <template>
+  <body>
   <header>
     <nav>
       <div class="content">
@@ -24,11 +25,12 @@
     <p>Compartido bajo la licencia <a href="https://opensource.org/licenses/MIT" target="_blank">MIT</a>. Copyright &copy; 2016 RedExpoSocial.</p>
     <p>Desarrollado por <a href="http://www.cesargdm.com" target="_blank">cesargdm</a></p>
   </footer>
+  </body>
 </template>
 
 <script>
-import Auth from '../auth.js'
-import DecodeToken from 'jwt-decode'
+var Auth = require('../auth.js')
+var DecodeToken = require('jwt-decode')
 
 export default {
     data() {
@@ -37,6 +39,10 @@ export default {
         user: { authenticated: false },
         active: 0
       }
+    },
+    components: {
+      Auth,
+      DecodeToken
     },
     created() {
 

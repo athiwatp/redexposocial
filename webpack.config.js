@@ -27,9 +27,9 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        loader: 'babel', // 'babel-loader' is also a valid name to reference
+        loader: 'babel-loader', // 'babel-loader' is also a valid name to reference
         query: {
-          presets: ["es2015","babel-preset-es2015"]
+          presets: ["es2015"]
         }
       }
     ]
