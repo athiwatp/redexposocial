@@ -1,0 +1,19 @@
+version: v1.5.2
+ignore: {}
+patch:
+  'npm:minimatch:20160620':
+    - gulp > vinyl-fs > glob-stream > minimatch:
+        patched: '2016-10-16T19:25:59.338Z'
+    - gulp > vinyl-fs > glob-stream > glob > minimatch:
+        patched: '2016-10-16T19:25:59.338Z'
+    - forever > forever-monitor > minimatch:
+        patched: '2016-10-16T19:25:59.338Z'
+    - gulp > vinyl-fs > glob-watcher > gaze > globule > glob > minimatch:
+        patched: '2016-10-16T19:25:59.338Z'
+    - gulp > vinyl-fs > glob-watcher > gaze > globule > minimatch:
+        patched: '2016-10-16T19:25:59.338Z'
+  'npm:tough-cookie:20160722':
+    - forever > forever-monitor > chokidar > fsevents > node-pre-gyp > request > tough-cookie:
+        patched: '2016-10-16T19:25:59.338Z'
+    - nunjucks > chokidar > fsevents > node-pre-gyp > request > tough-cookie:
+        patched: '2016-10-16T19:25:59.338Z'
