@@ -1,3 +1,4 @@
+
 'use strict'
 let mongoose = require('mongoose')
 
@@ -7,10 +8,10 @@ let newSchema = new mongoose.Schema({
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     org: { type: mongoose.Schema.Types.ObjectId, ref: 'Org'},
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     comments: [{
-      user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-      body: String
+      user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+      body: {type: String, required: true }
     }],
     date: {
       type:Date,
