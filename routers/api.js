@@ -269,7 +269,7 @@ router.route('/news')
     else {
       var mappedNews = news.map(function(obj){
         obj = obj.toObject()
-        obj.favorited = obj.favorites.indexOf(req._UID) >= 0
+        obj.favorited = favorited(obj, req._UID)
         return obj
       })
       res.status(200).json({'news': mappedNews})
@@ -302,13 +302,17 @@ router.route('/news/:new_id')
 .get(function(req,res){
   New.findById(req.params.new_id)
   .populate('org author comments.user', 'name username image')
-  .exec(function(err,newObject){
+  .exec(function(err, newObject){
     if (err)
       res.status(500).json({'error': err})
     else if (!newObject)
       res.status(404).json({'error': {'errmsg': "That new wasn't found, wtf happened?"}})
-    else
+    else {
+      newObject = newObject.toObject()
+      newObject.favorited = favorited(newObject, req._UID)
+
       res.status(200).json({'new': newObject})
+    }
   })
 })
 .put(function(req,res){
@@ -317,6 +321,14 @@ router.route('/news/:new_id')
 .delete(function(req,res){
   res.status(500).json({'message': "Not yet supported"})
 })
+
+function favorited(newObject, id) {
+  for (var i = 0; i < newObject.favorites.length; i++) {
+    if (JSON.stringify(newObject.favorites[i]) == JSON.stringify(id))
+      return true
+  }
+  return  false
+}
 
 router.route('/news/:new_id/comments')
 .post(function(req,res){
