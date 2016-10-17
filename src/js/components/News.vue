@@ -57,7 +57,7 @@
           <p>{{displayOrg}}</p>
           <input type="text" id="org" class="filter" @focus="selectorShow=true" v-model="orgQuery">
           <div class="selections" v-show="selectorShow">
-            <p v-for="org in filteredOrgs" @click="setOrg(this.org)">{{org.name.short}}</p>
+            <p v-for="org in orgs | filterBy orgQuery" @click="setOrg(this.org)">{{org.name.short}}</p>
           </div>
         </div>
       </div>

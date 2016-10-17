@@ -104,7 +104,7 @@ router.use(function(req, res, next) {
       if (err)
         res.status(401).json({'success': false, 'message': "Failed to authenticate token."}) //End next requests and send a 401 (unauthorized)
       else { //Send the decoded token to the request body
-        req._uid = decoded._id //Save the decoded user_id from the token to use in next routes
+        req._UID = decoded._id //Save the decoded user_id from the token to use in next routes
         next() //Continiue to the pleased route
       }
     })
@@ -140,7 +140,7 @@ router.route('/orgs')
         res.status(500).json({'error': err, 'message': "Could not save the org"}) //If there's a problem saving the user return a 500
       } else {
         //TODO: Check if this works
-        org.addMember(req._uid, 3) //Push member to the org and add the access class '3'
+        org.addMember(req._UID, 3) //Push member to the org and add the access class '3'
         res.status(201).json({'message': "Org created!", 'org': org})
       }
     })
@@ -266,20 +266,26 @@ router.route('/news')
       res.status(500).json({'error': err})
     else if (!news || news.length == 0)
       res.status(404).json({'error': {'errmsg': "No news found, go on and make 'em!"}})
-    else
-      res.status(200).json({'news': news})
+    else {
+      var mappedNews = news.map(function(obj){
+        obj = obj.toObject()
+        obj.favorited = obj.favorites.indexOf(req._UID) >= 0
+        return obj
+      })
+      res.status(200).json({'news': mappedNews})
+    }
   })
 })
 .post(function(req,res){
-  User.findById(req._uid)
+  User.findById(req._UID)
   .exec(function(err,user){
     if (err)
       res.status(500).json({'error': err})
     else {
-      if (user.access<=0) { //Or admin of the page
+      if (user.access <= 0) { //TODO: Or admin of the page
         res.status(301).json({message: "You are not admin of the org, or general admin >:|"})
       } else {
-        req.body.new.author = req._uid
+        req.body.new.author = req._UID
         new New(req.body.new)
         .save(function(err, newObj){
           if (err)
@@ -313,16 +319,36 @@ router.route('/news/:new_id')
 })
 
 router.route('/news/:new_id/comments')
+.post(function(req,res){
+  if (req.body.comment.length == 0)
+    return res.status(400).json({message: "Try something larger"})
+  New.findByIdAndUpdate(req.params.new_id, {$push: {comments: {body: req.body.comment, user: req._UID}}}, {safe: true, new: true})
+  .exec(function(err, result) {
+    if (err)
+      return res.status(500).json({err: err})
+    res.status(201).json({result:result})
+  })
+})
 .get(function(req,res){
-  res.status(500).json({'message': "Not yet supported"})
+  New.findById(req.params.new_id,'comments')
+  .exec(function(err,comments){
+    if (err)
+      return res.status(500).json({err: err})
+    res.status(200).json(comments)
+  })
 })
 
-router.route('/news/:new_id/likes')
+router.route('/news/:new_id/favorites')
 .get(function(req,res){
   res.status(500).json({'message': "Not yet supported"})
 })
 .post(function(req,res){
-  res.status(500).json({'message': "Not yet supported"})
+  New.findByIdAndUpdate(req.params.new_id, {$addToSet: {favorites: req._UID}}, {safe: true})
+  .exec(function(err, result) {
+    if (err)
+      return res.status(500).json({err: err})
+    res.status(201).json({result:result})
+  })
 })
 
 /*******************************
@@ -399,7 +425,7 @@ router.route('/events/:event_id/likes')
 
 //☝︎ All that is before this middleware won't be protected for level 0
 router.use(function(req, res, next) {
-  User.findById(req._uid, 'access') //Just get the access atribute of the user
+  User.findById(req._UID, 'access') //Just get the access atribute of the user
   .exec(function(err,user){
     if (err)
       res.status(500).json({'error':err})
