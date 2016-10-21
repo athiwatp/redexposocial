@@ -160,6 +160,14 @@ header {
     margin-right: 10px;
   }
 }
+.element.progress {
+  position: relative;
+  .spinner {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+  }
+}
 .model.editable {
   .title {
     font-size: 2rem;
@@ -225,6 +233,7 @@ router-view {
           flex-shrink: 0;
         }
         .selections {
+          z-index: 1;
           top: 30px;
           background: #FFF;
           position: absolute;
@@ -232,6 +241,7 @@ router-view {
           overflow-y: scroll;
           padding: 5px;
           left: 0;
+          margin-bottom: 20px;
           border-radius: 5px;
           box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
           p {
@@ -259,6 +269,9 @@ router-view {
         input, textarea {
           width: 100%;
         }
+        textarea {
+          height: 150px;
+        }
       }
       label {
         display: block;
@@ -267,6 +280,7 @@ router-view {
   }
 }
 button {
+
   &.cancel {
     border: 1px solid rgb(224, 57, 57);
     color: rgb(224, 57, 57);
@@ -288,6 +302,10 @@ button {
       background: rgb(81, 154, 73);
     }
   }
+}
+button[disabled],button[disabled="disabled"] {
+  cursor: default;
+  background: $gray;
 }
 label {
   font-size: 0.85rem;

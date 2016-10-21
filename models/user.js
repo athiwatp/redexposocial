@@ -24,7 +24,7 @@ let userSchema = new mongoose.Schema({
       country: String
     },
     interests: [ String ],
-    following: [{type: mongoose.Schema.Types.ObjectId, ref: 'Org'}],
+    followingOrgs: [{type: mongoose.Schema.Types.ObjectId, ref: 'Org'}],
     password: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     username: { type: String, required: true, unique: true}

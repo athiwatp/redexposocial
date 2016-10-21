@@ -15,11 +15,11 @@
         </div>
       </div>
       <div class="table-body">
-        <div class="table-elem" v-for="newObject in news | filterBy searchQuery" v-link="'/news/' + newObject._id">
-          <div><p v-if="newObject.title">{{newObject.title}}</p></div>
-          <div><p v-if="newObject.date">{{newObject.date}}</p></div>
-          <div><p v-if="newObject.org">{{newObject.org.name.short}}</p></div>
-          <div><p v-if="newObject.tags">{{newObject.tags}}</p></div>
+        <div class="table-elem" v-for="new in news | filterBy searchQuery" v-link="'/news/' + newObject._id">
+          <div><p v-if="new.title">{{new.title}}</p></div>
+          <div><p v-if="new.date">{{new.date}}</p></div>
+          <div><p v-if="new.org">{{new.org.name.short}}</p></div>
+          <div><p v-if="new.tags">{{new.tags}}</p></div>
           <div><p v-if="newObject.author">{{newObject.author.username}}</p></div>
         </div>
       </div>
@@ -39,18 +39,18 @@
         <label for="body">Cuerpo</label>
         <textarea id="body" v-model="newObject.body"></textarea>
       </div>
-      <div class="element">
+      <!-- <div class="element">
         <label for="date">Fecha</label>
         <input type="date" v-model="newObject.date" id="date">
-      </div>
-      <div class="element">
+      </div> -->
+      <!-- <div class="element">
         <label for="location">Lugar</label>
         <div class="location-wrapper">
           <input type="text" v-model="newObject.location.city" placeholder="Ciudad">
           <input type="text" v-model="newObject.location.state" placeholder="Estado">
           <input type="text" v-model="newObject.location.country" placeholder="País">
         </div>
-      </div>
+      </div> -->
       <div class="element">
         <label for="org">Organización</label>
         <div class="selector">
@@ -61,11 +61,12 @@
           </div>
         </div>
       </div>
-      <!-- <div class="element">
+      <div class="element progress">
+        <img src="/static/img/icons/spin.gif" class="spinner" v-show="uploadingImage"/>
         <label for="">Imagen</label>
-        <input type="file" v-model="newObject.images[0]" placeholder="">
-      </div> -->
-      <button type="button" v-on:click="addNew()" class="add">Añadir noticia</button>
+        <input type="file" v-model="newObject.images[0]" @change="fileChange" name="headerImage">
+      </div>
+      <button type="button" @click="addNew()" class="add" :disabled="uploadingImage">Añadir noticia</button>
     </div>
   </div>
 </template>
@@ -74,11 +75,13 @@
   export default {
     data() {
       return {
+        uploadingImage: false,
         news: [],
         newObject: {
           org: null,
           images: [],
-          location: {}
+          location: {},
+          title: ''
         },
         orgQuery: null,
         displayOrg: null,
@@ -89,6 +92,13 @@
       }
     },
     methods: {
+      fileChange(e) {
+        this.uploadingImage = true
+        var files = e.target.files
+        if (!files.length)
+          return
+        this.upload(files[0])
+      },
       setOrg(org) {
         this.newObject.org = org._id
         this.displayOrg = org.name.short
@@ -97,11 +107,28 @@
       addNew() {
         this.$http.post('/api/news', {'newObject': this.newObject}).then((res) => {
           this.addModelShow = false
-          this.newObject = {}
           this.news.push(res.body.newObject)
+          this.newObject = {}
         }, (err) => {
           this.error = err
         })
+      },
+      upload(file) {
+        var reader = new FileReader(),
+            image = new Image(),
+            self = this
+        reader.onload = (e) => {
+          self.$http.post('/api/upload',
+          {'img': e.target.result})
+          .then((res) => {
+            self.newObject.images[0] = res.body.path
+            self.uploadingImage = false
+          }, (errRes) => {
+            this.error = err
+            self.uploadingImage = false
+          })
+        }
+        reader.readAsDataURL(file)
       }
     },
     created() {

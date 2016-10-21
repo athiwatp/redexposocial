@@ -14,7 +14,7 @@ var port = process.env.PORT || 8080 //use port passed or 8080
 app.use(helmet())
 app.use('/static', express.static( __dirname + '/public'))
 app.use(bodyParser.json({limit: '2mb'})) //Get elements from body (JSON)
-app.use(bodyParser.urlencoded({ extended: true})) //Get elements from URL
+app.use(bodyParser.urlencoded({ extended: true, limit: '2mb'})) //Get elements from URL
 app.use(morgan('dev')) //HTTP request logger middleware for node.js
 
 app.use('/api', API) //use the api

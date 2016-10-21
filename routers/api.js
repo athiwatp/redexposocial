@@ -160,6 +160,30 @@ router.route('/orgs/:org_id')
   })
 })
 
+router.route('/upload')
+.post(function(req,res){
+
+  if (!req.body.img)
+    return res.status(400)
+
+  var matches = req.body.img.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+      extension = matches[1].split('/')[1],
+      random = Math.floor((Math.random() * 10) + 1),
+      fileName = random + '' + Date.now() + '.' + extension
+
+  var data = matches[0].replace(/^data:image\/\w+;base64,/, '')
+
+  fs.writeFile(__dirname + '/../public/uploads/' + fileName, data, {encoding: 'base64'}, function(err){
+    if (err)
+      return res.status(500)
+
+    var path = "/static/uploads/" + fileName
+    res.status(201).json({'path': path})
+
+  })
+
+})
+
 router.route('/orgs/:org_id/photo')
 .post(function(req,res){
   if (!req.body.img)
@@ -186,9 +210,7 @@ router.route('/orgs/:org_id/photo')
         res.status(201).json({'path': path})
       })
     })
-
   })
-
 })
 
 router.route('/orgs/:org_id/members')
@@ -250,6 +272,61 @@ router.route('/users/:user_id')
   res.status(500).json({'message': "Not yet supported"})
 })
 
+router.route('/users/:user_id/photo')
+.post(function(req,res){
+  if (!req.body.img)
+    return res.status(400)
+  if (req.params.user_id != req._UID)
+    return res.status(403)
+
+    console.log('IMG');
+    console.log(req.body.img)
+
+  var matches = req.body.img.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+      extension = matches[1].split('/')[1],
+      random = Math.floor((Math.random() * 10) + 1),
+      fileName = random + '' + Date.now() + '.' + extension
+
+  var data = matches[0].replace(/^data:image\/\w+;base64,/, '')
+
+  fs.writeFile(__dirname + '/../public/uploads/' + fileName, data, {encoding: 'base64'}, function(err){
+    if (err) {
+      return res.status(500)
+    }
+
+    User.findById(req.params.user_id)
+    .exec(function(err, user) {
+      var path = "/static/uploads/" + fileName
+      user.image = path
+      user.save(function(err){
+        if (err)
+          return res.status(500).json({err:err})
+        res.status(201).json({'path': path})
+      })
+    })
+  })
+})
+
+
+router.route('/users/:user_id/following/categories')
+.get(function(req,res){
+
+})
+.post(function(req,res){
+
+})
+
+router.route('/users/:user_id/following/orgs')
+.get(function(req,res){
+  User.findById(req.params.user_id)
+  .exec(function(req,res){
+
+  })
+})
+.post(function(req,res){
+  User.findByIdAndUpdate(req.params.user_id)
+})
+
 /*******************************
 **                            **
 **            NEWS            **
@@ -285,13 +362,15 @@ router.route('/news')
       if (user.access <= 0) { //TODO: Or admin of the page
         res.status(301).json({message: "You are not admin of the org, or general admin >:|"})
       } else {
-        req.body.new.author = req._UID
-        new New(req.body.new)
+        req.body.newObject.author = req._UID
+        new New(req.body.newObject)
         .save(function(err, newObj){
           if (err)
-            res.status(500).json({'error': err})
-          else
-            res.status(201).json({new: newObj, message: "Successfully created new new"})
+            return res.status(500).json({'error': err})
+
+          //TODO: Send PUSH NOTIFICATIONS
+
+          res.status(201).json({new: newObj, message: "Successfully created new new ;)"})
         })
       }
     }
@@ -362,13 +441,20 @@ router.route('/news/:new_id/favorites')
     res.status(201).json({result:result})
   })
 })
+.delete(function(req,res){
+  New.findByIdAndUpdate(req.params.new_id, {$pull: {favorites: req._UID}}, {safe: true})
+  .exec(function(err, result) {
+    if (err)
+      return res.status(500).json({err: err})
+    res.status(200).json({result:result})
+  })
+})
 
 /*******************************
 **                            **
 **           EVENTS           **
 **                            **
 ********************************/
-
 
 router.route('/events')
 .get(function(req,res){
@@ -384,6 +470,13 @@ router.route('/events')
   })
 })
 .post(function(req,res){
+
+
+
+
+  //TODO: Sednd push notifications
+
+
   res.status(500).json({'message': "Not yet implemented"})
 })
 
@@ -468,6 +561,16 @@ router.route('/orgs/:org_id')
       return res.status(500).json({'err':err})
     }
     res.status(200).json({'message': "Updated", 'org': org})
+  })
+})
+
+router.route('/orgs/:org_id/followers')
+.get(function(req,res){
+  User.find({followingOrgs: req.params.org_id}, '-password -access')
+  .exec(function(err,users) {
+    if (err)
+      return res.status(500).json({err:err})
+    res.status(200).json({users:users})
   })
 })
 
