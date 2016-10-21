@@ -4,6 +4,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import VueResource from 'vue-resource'
 import DecodeToken from 'jwt-decode'
+import VueGmaps from 'vue-gmaps'
 
 import App from "./components/App.vue"
 import Orgs from "./components/Orgs.vue"
@@ -15,11 +16,16 @@ import Auth from "./auth.js"
 import Login from "./components/Login.vue"
 import MyInfo from "./components/MyInfo.vue"
 
+// Vue.use(VueGmaps, {
+//   key: 'AIzaSyCm_FGlbhv4Tp8pCWMCrPmVghWw7rgvifE'
+// })
+
 Vue.use(VueResource)
 Vue.use(VueRouter)
 
 Vue.options.replace = false
-window.host = 'http://45.55.94.138'
+window.host = 'http://localhost:8080'
+
 
 Vue.http.interceptors.push((request, next) => {
 

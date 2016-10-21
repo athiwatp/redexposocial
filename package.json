@@ -28,6 +28,7 @@
     "multer": "^1.2.0",
     "snyk": "^1.19.1",
     "vue": "^1.0.28",
+    "vue-gmaps": "0.0.7",
     "vue-resource": "^1.0.3",
     "vue-router": "^0.7.13"
   },

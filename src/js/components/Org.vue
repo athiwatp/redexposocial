@@ -157,8 +157,6 @@ export default {
 
       }
       reader.readAsDataURL(file)
-
-      console.log('Upload image')
     }
   }
 }
