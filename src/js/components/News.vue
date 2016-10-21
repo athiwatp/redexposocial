@@ -15,11 +15,11 @@
         </div>
       </div>
       <div class="table-body">
-        <div class="table-elem" v-for="newObject in news | filterBy searchQuery" v-link="'/news/' + newObject._id">
-          <div><p v-if="newObject.title">{{newObject.title}}</p></div>
-          <div><p v-if="newObject.date">{{newObject.date}}</p></div>
-          <div><p v-if="newObject.org">{{newObject.org.name.short}}</p></div>
-          <div><p v-if="newObject.tags">{{newObject.tags}}</p></div>
+        <div class="table-elem" v-for="new in news | filterBy searchQuery" v-link="'/news/' + newObject._id">
+          <div><p v-if="new.title">{{new.title}}</p></div>
+          <div><p v-if="new.date">{{new.date}}</p></div>
+          <div><p v-if="new.org">{{new.org.name.short}}</p></div>
+          <div><p v-if="new.tags">{{new.tags}}</p></div>
           <div><p v-if="newObject.author">{{newObject.author.username}}</p></div>
         </div>
       </div>
@@ -39,10 +39,10 @@
         <label for="body">Cuerpo</label>
         <textarea id="body" v-model="newObject.body"></textarea>
       </div>
-      <div class="element">
+      <!-- <div class="element">
         <label for="date">Fecha</label>
         <input type="date" v-model="newObject.date" id="date">
-      </div>
+      </div> -->
       <!-- <div class="element">
         <label for="location">Lugar</label>
         <div class="location-wrapper">
@@ -80,7 +80,8 @@
         newObject: {
           org: null,
           images: [],
-          location: {}
+          location: {},
+          title: ''
         },
         orgQuery: null,
         displayOrg: null,
@@ -106,8 +107,8 @@
       addNew() {
         this.$http.post('/api/news', {'newObject': this.newObject}).then((res) => {
           this.addModelShow = false
-          this.newObject = {}
           this.news.push(res.body.newObject)
+          this.newObject = {}
         }, (err) => {
           this.error = err
         })
