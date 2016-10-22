@@ -30,13 +30,6 @@ let userSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true}
 })
 
-userSchema.pre('save', function(next, callback){
-  this.password = bcrypt.hashSync(this.password, bcrypt.genSaltSync(8), function(err){
-      if (err) callback({error:{errmsg:"Error making hash sync"}},null)
-  })
-  next()
-})
-
 userSchema.methods.comparePassword = function (password) {
   return bcrypt.compareSync(password, this.password);
 }
