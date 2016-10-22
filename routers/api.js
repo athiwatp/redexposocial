@@ -23,7 +23,7 @@ let ExpressBrute = require('express-brute'),
     ObjectId = require('mongodb').ObjectId
 let store = new MongoStore(function (ready) {
   MongoClient.connect(config.database, function(err, db) {
-    if (err) throw err;
+    if (err) throw err
     ready(db.collection('bruteforce-store'))
   })
 })
@@ -31,13 +31,13 @@ let bruteforce = new ExpressBrute(store)
 
 let storage = multer.diskStorage({ //Storage helper
     destination: function (req, file, cb) { //File uploads destination
-        cb(null, 'public/uploads/');
+        cb(null, 'public/uploads/')
     },
     filename: function (req, file, cb) { //Filenames for every upload, we'll use timestamp and stuff
-        var datetimestamp = Date.now();
-        cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1]);
+        var datetimestamp = Date.now()
+        cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1])
     }
-});
+})
 
 mongoose.connect('mongodb://localhost/red') //make db connection
 let upload = multer({storage: storage}).single('file'); //Upload things
@@ -78,7 +78,7 @@ router.post('/users', function(req,res) {
   })
 })
 
-router.route('/users/i=:user_identifier?/exists')
+router.route('/users/i=:user_identifier?')
 .get(function(req,res){
   User.findOne({$or: [{'email': req.params.user_identifier},{ 'username': req.params.user_identifier}] })
   .exec(function(err, user){
@@ -580,7 +580,9 @@ router.route('/users')
 .get(function(req,res){
   User.find({})
   .exec(function(err,users){
-    res.json({users: users});
+    if (err)
+      return res.status(500).json({error:err})
+    res.json({users: users})
   })
 })
 
@@ -590,9 +592,8 @@ router.route('/orgs/:org_id')
 
   Org.findByIdAndUpdate(req.params.org_id, {$set: req.body.org}, {upsert: true})
   .exec(function(err, org){
-    if (err) {
+    if (err)
       return res.status(500).json({'err':err})
-    }
     res.status(200).json({'message': "Updated", 'org': org})
   })
 })
