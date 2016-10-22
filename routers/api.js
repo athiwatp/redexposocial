@@ -78,6 +78,18 @@ router.post('/users', function(req,res) {
   })
 })
 
+router.route('/users/i=:user_identifier?/exists')
+.get(function(req,res){
+  User.findOne({$or: [{'email': req.params.user_identifier},{ 'username': req.params.user_identifier}] })
+  .exec(function(err, user){
+    if (err)
+      return res.status(500).json({error: err})
+    if (user)
+      return res.status(200).json({message: "User found"})
+    res.status(404).json({message: "No user found"})
+  })
+})
+
 router.route('/authenticate')
 .get(function(req,res){
   let token = req.headers['x-access-token'] //check for the token uniquely in the headers
