@@ -12,6 +12,7 @@ let express = require('express'), //Express
 let User = require(__dirname + "/../models/user.js"), //Model for users
     Org = require(__dirname + "/../models/org.js"), //Model for Organizations
     New = require(__dirname + "/../models/new.js"),
+    Tag = require(__dirname + "/../models/tag.js"),
     Event = require(__dirname + "/../models/event.js"),
     config = require(__dirname + "/../config/config.js") //Database connection, and secret password
 
@@ -148,6 +149,22 @@ router.use(function(req, res, next) {
 
 /*******************************
 **                            **
+**           TAGS            **
+**                            **
+********************************/
+
+router.route('/tags')
+.get(function(req,res){
+  Tag.find()
+  .exec(function(err,tags){
+    if (err)
+      return res.status(500).json({'error': err})
+    res.status(200).json({tags: tags})
+  })
+})
+
+/*******************************
+**                            **
 **    ORGANIZATIONS/ORGS      **
 **                            **
 ********************************/
@@ -178,6 +195,16 @@ router.route('/orgs')
       }
     })
   }
+})
+
+router.route('/orgs/popular')
+.get(function(req,res){
+  Org.find()
+  .exec(function(err,orgs){
+    if (err)
+      res.sztatus(500).json({error:err})
+    //TODO: finish
+  })
 })
 
 router.route('/orgs/:org_id')
@@ -266,7 +293,7 @@ router.route('/orgs/:org_id/members')
 router.route('/orgs/:org_id/news')
 .get(function(req,res){
   News.find({org: req.params.org_id})
-  .sort("-id")
+  .sort("-_id")
   .exec(function(err, news){
     if (err)
       res.status(500).json({'error': err})
@@ -297,7 +324,15 @@ router.route('/users/:user_id')
     else if (!user)
       res.status(404).json({'error': {'errmsg': "No user found, maybe it's a ghost?"}})
     else {
-      res.status(200).json({'user': user})
+      New.find({favorites: req.params.user_id},'title body date')
+      .exec(function(err, news){
+        if (err)
+          res.status(200).json({'user': user})
+        user = user.toObject()
+        user.favorites = news
+
+        res.status(200).json({'user': user})
+      })
     }
   })
 })
@@ -371,6 +406,7 @@ router.route('/news')
 .get(function(req,res){
   New.find({})
   .populate('org author', 'name username')
+  .sort('-_id')
   .exec(function(err,news){
     if (err)
       res.status(500).json({'error': err})
@@ -414,6 +450,7 @@ router.route('/news/:new_id')
 .get(function(req,res){
   New.findById(req.params.new_id)
   .populate('org author comments.user', 'name username image')
+  .sort('comments._id')
   .exec(function(err, newObject){
     if (err)
       res.status(500).json({'error': err})
