@@ -23,18 +23,11 @@ let userSchema = new mongoose.Schema({
       state: String,
       country: String
     },
-    interests: [ String ],
+    tags: [{type: mongoose.Schema.Types.ObjectId, ref: 'Tag'}],
     followingOrgs: [{type: mongoose.Schema.Types.ObjectId, ref: 'Org'}],
     password: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     username: { type: String, required: true, unique: true}
-})
-
-userSchema.pre('save', function(next, callback){
-  this.password = bcrypt.hashSync(this.password, bcrypt.genSaltSync(8), function(err){
-      if (err) callback({error:{errmsg:"Error making hash sync"}},null)
-  })
-  next()
 })
 
 userSchema.methods.comparePassword = function (password) {

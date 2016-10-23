@@ -6,23 +6,39 @@ let express = require('express'), //Express
     mongoose = require('mongoose'), //db connector
     fs = require('fs'), //file writer
     bodyParser = require('body-parser'),
+    bcrypt = require('bcrypt-nodejs'),
     router = express.Router() //Express router
 
 let User = require(__dirname + "/../models/user.js"), //Model for users
     Org = require(__dirname + "/../models/org.js"), //Model for Organizations
     New = require(__dirname + "/../models/new.js"),
+    Tag = require(__dirname + "/../models/tag.js"),
     Event = require(__dirname + "/../models/event.js"),
     config = require(__dirname + "/../config/config.js") //Database connection, and secret password
 
+//SECURITY
+  //Brute force attack
+let ExpressBrute = require('express-brute'),
+    MongoStore = require('express-brute-mongo'),
+    MongoClient = require('mongodb').MongoClient,
+    ObjectId = require('mongodb').ObjectId
+let store = new MongoStore(function (ready) {
+  MongoClient.connect(config.database, function(err, db) {
+    if (err) throw err
+    ready(db.collection('bruteforce-store'))
+  })
+})
+let bruteforce = new ExpressBrute(store)
+
 let storage = multer.diskStorage({ //Storage helper
     destination: function (req, file, cb) { //File uploads destination
-        cb(null, 'public/uploads/');
+        cb(null, 'public/uploads/')
     },
     filename: function (req, file, cb) { //Filenames for every upload, we'll use timestamp and stuff
-        var datetimestamp = Date.now();
-        cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1]);
+        var datetimestamp = Date.now()
+        cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1])
     }
-});
+})
 
 mongoose.connect('mongodb://localhost/red') //make db connection
 let upload = multer({storage: storage}).single('file'); //Upload things
@@ -30,30 +46,48 @@ let upload = multer({storage: storage}).single('file'); //Upload things
 router.post('/users', function(req,res) {
   if (!req.body || !req.body.user) //If we dont have a body in the request or a user in the body request return error
     return res.status(400).json({'error':{'errmsg': "No user object specified"}}) //If it is not a return function it will be passing the next function
-  User.findOne({$or: [{'email':req.body.email},{'username':req.body.username}]},'email username')
+  User.findOne({$or: [{'email':req.body.user.email},{'username':req.body.user.username}]},'email username')
   .exec(function(err, user){ //This returns an error or the element
     if (err)
       res.status(500).json({'error':err}) //If there's an error return a 500 (internal server error)
     else {
       if (user) { //if user exists
-        if (user.email == req.body.email && user.username == req.body.username) //Validate the user doesn't exists
-          res.status(409).json({'error':{'message': "Email and user already exists"}})
-        else if (user.username == req.body.username)
-          res.status(409).json({'error':{'message': "User already exists"}})
-        else if (user.email == req.body.email)
-          res.status(409).json({'error': {'message': "Email already exists"}})
+        if (user.email == req.body.user.email && user.username == req.body.user.username) //Validate the user doesn't exists
+          return res.status(409).json({'error':{'message': "Email and user already exists"}})
+        if (user.username == req.body.user.username)
+          return res.status(409).json({'error':{'message': "User already exists"}})
+        if (user.email == req.body.user.email)
+          return res.status(409).json({'error': {'message': "Email already exists"}})
       } else { //If no errors or authentication problems occurr, continue to create the user
-        new User(req.body.user) //Create the new user with the user object, all atributes will be passed
+        new User({
+          name: {
+            firstName: req.body.user.name.firstName,
+            lastName: req.body.user.name.lastName
+          },
+          password: bcrypt.hashSync(req.body.user.password + config.secret), //Hash with salt
+          email: req.body.user.email,
+          username: req.body.user.username,
+        }) //Create the new user with the user object, all atributes will be passed
         .save(function(err, user){ //Save it, note the point, this is a concatenated function: like new User().save
-          if (err) {
-            res.status(500).json({'error': err, 'message': "Could not save the user"}) //If there's a problem saving the user return a 500
-          } else {
-            let token = jwt.sign({'_id': user._id}, config.secret, {expiresIn: 604800}) //Sign token with the user id, set the secret password for ecryption, and set the expiration in 7 days
-            res.status(201).json({'user': {'_id': user._id},'token': token, 'message': "User created, congrats"})
-          }
+          if (err)
+            return res.status(500).json({'error': err, 'message': "Could not save the user"}) //If there's a problem saving the user return a 500
+          let token = jwt.sign({'_id': user._id}, config.secret, {expiresIn: 604800}) //Sign token with the user id, set the secret password for ecryption, and set the expiration in 7 days
+          res.status(201).json({'user': {'_id': user._id},'token': token, 'message': "User created, congrats"})
         })
       }
     }
+  })
+})
+
+router.route('/users/i=:user_identifier?')
+.get(function(req,res){
+  User.findOne({$or: [{'email': req.params.user_identifier},{ 'username': req.params.user_identifier}] })
+  .exec(function(err, user){
+    if (err)
+      return res.status(500).json({error: err})
+    if (user)
+      return res.status(200).json({message: "User found"})
+    res.status(404).json({message: "No user found"})
   })
 })
 
@@ -63,15 +97,15 @@ router.route('/authenticate')
   if (token) { //Check that the request has a token
     jwt.verify(token, config.secret, function(err) { // Decode token and check it's valid with the secret password
       if (err)
-        res.status(401).json({'message': "Failed to authenticate token."}) //End next requests and send a 401 (unauthorized)
+        res.status(403).json({'message': "Failed to authenticate token."}) //End next requests and send a 401 (unauthorized)
       else//Send the decoded token to the request body
         res.status(200).json({'message': "You are authenticated :)"})
     })
   } else {
-    res.status(403).json({'error':{'message': "No token provided"}})
+    res.status(401).json({'error':{'message': "No token provided"}})
   }
 })
-.post(function(req, res) {
+.post(bruteforce.prevent, function(req, res) {
   if (!req.body.username && !req.body.email) { //if no username or email is passed send this
     res.status(403).json({'message': "Authentication failed, no user specified" })
   } else {
@@ -80,10 +114,10 @@ router.route('/authenticate')
       if (err)
         res.status(500).json({'error': err})
       else if (!user)
-        res.status(400).json({message: "Authentication failed. Wrong user or password."}) //If user doesn't exists
+        res.status(401).json({message: "Authentication failed. Wrong user or password."}) //If user doesn't exists
       else {
-        if (!user.comparePassword(req.body.password))
-          res.status(400).json({message: "Authentication failed. Wrong user or password."}); //If passwords don't match
+        if (!user.comparePassword(req.body.password + config.secret)) //Add config.secreat as salt
+          res.status(401).json({message: "Authentication failed. Wrong user or password."}); //If passwords don't match
         else {
           let token = jwt.sign({'_id': user._id}, config.secret, {expiresIn: 604800000}) //Sign token with the user id, set the secret password for ecryption, and set the expiration in 2 days
           res.status(200).json({'message': "Logged in, yay!", 'user': {'_id': user._id, 'name': user.name, 'username': user.username}, 'token': token })
@@ -109,8 +143,24 @@ router.use(function(req, res, next) {
       }
     })
   } else {
-    res.status(403).json({'error':{'message': "No token provided"}})
+    res.status(403).json({'error':{'message': "No token provided, get yourself a token ._."}})
   }
+})
+
+/*******************************
+**                            **
+**           TAGS            **
+**                            **
+********************************/
+
+router.route('/tags')
+.get(function(req,res){
+  Tag.find()
+  .exec(function(err,tags){
+    if (err)
+      return res.status(500).json({'error': err})
+    res.status(200).json({tags: tags})
+  })
 })
 
 /*******************************
@@ -145,6 +195,16 @@ router.route('/orgs')
       }
     })
   }
+})
+
+router.route('/orgs/popular')
+.get(function(req,res){
+  Org.find()
+  .exec(function(err,orgs){
+    if (err)
+      res.sztatus(500).json({error:err})
+    //TODO: finish
+  })
 })
 
 router.route('/orgs/:org_id')
@@ -233,7 +293,7 @@ router.route('/orgs/:org_id/members')
 router.route('/orgs/:org_id/news')
 .get(function(req,res){
   News.find({org: req.params.org_id})
-  .sort("-id")
+  .sort("-_id")
   .exec(function(err, news){
     if (err)
       res.status(500).json({'error': err})
@@ -264,7 +324,15 @@ router.route('/users/:user_id')
     else if (!user)
       res.status(404).json({'error': {'errmsg': "No user found, maybe it's a ghost?"}})
     else {
-      res.status(200).json({'user': user})
+      New.find({favorites: req.params.user_id},'title body date')
+      .exec(function(err, news){
+        if (err)
+          res.status(200).json({'user': user})
+        user = user.toObject()
+        user.favorites = news
+
+        res.status(200).json({'user': user})
+      })
     }
   })
 })
@@ -338,6 +406,7 @@ router.route('/news')
 .get(function(req,res){
   New.find({})
   .populate('org author', 'name username')
+  .sort('-_id')
   .exec(function(err,news){
     if (err)
       res.status(500).json({'error': err})
@@ -381,6 +450,7 @@ router.route('/news/:new_id')
 .get(function(req,res){
   New.findById(req.params.new_id)
   .populate('org author comments.user', 'name username image')
+  .sort('comments._id')
   .exec(function(err, newObject){
     if (err)
       res.status(500).json({'error': err})
@@ -547,7 +617,9 @@ router.route('/users')
 .get(function(req,res){
   User.find({})
   .exec(function(err,users){
-    res.json({users: users});
+    if (err)
+      return res.status(500).json({error:err})
+    res.json({users: users})
   })
 })
 
@@ -557,9 +629,8 @@ router.route('/orgs/:org_id')
 
   Org.findByIdAndUpdate(req.params.org_id, {$set: req.body.org}, {upsert: true})
   .exec(function(err, org){
-    if (err) {
+    if (err)
       return res.status(500).json({'err':err})
-    }
     res.status(200).json({'message': "Updated", 'org': org})
   })
 })

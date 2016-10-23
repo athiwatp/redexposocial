@@ -10,6 +10,7 @@ let orgSchema = new mongoose.Schema({
     username: {type: String, unique: true, required: true},
     topics: [String],
     image: String,
+    tags: [{type: mongoose.Schema.Types.ObjectId, ref: 'Tag'}],
     news: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'New'

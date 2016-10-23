@@ -25,6 +25,7 @@ var userSchema = new mongoose.Schema({
         lng: String
       }
     },
+    tags: [{type: mongoose.Schema.Types.ObjectId, ref: 'Tag'}],
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     images: [String],
     auth: Boolean,
