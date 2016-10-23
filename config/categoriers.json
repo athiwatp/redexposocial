@@ -10,7 +10,7 @@ db.tags.insert([
     "color": "#e6a824"
   },
   {
-    "title": "Salud",
+    "title": "Salud y deporte",
     "_id": 3,
     "color": "#00a83a"
   },
@@ -75,7 +75,7 @@ db.tags.insert([
     "color": "#00cb2e"
   },
   {
-    "title": "Paz, justicia e instituciones fuertes",
+    "title": "Arte y cultura",
     "_id": 16,
     "color": "#0068a1"
   }
