@@ -3,5 +3,6 @@ public/js/**
 public/views/**
 public/uploads/**
 config/config.js
+config/keys/**
 
 node_modules
