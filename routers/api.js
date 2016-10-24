@@ -7,7 +7,7 @@ let express = require('express'), //Express
     fs = require('fs'), //file writer
     bodyParser = require('body-parser'),
     bcrypt = require('bcrypt-nodejs'),
-    apn = require('apn'),
+    apn = require('apn'), //Apple Push Notifications Package
     router = express.Router() //Express router
 
 let User = require(__dirname + "/../models/user.js"), //Model for users
@@ -40,16 +40,8 @@ let storage = multer.diskStorage({ //Storage helper
 mongoose.connect('mongodb://localhost/red') //make db connection
 let upload = multer({storage: storage}).single('file'); //Upload things
 
-var options = {
-    token: {
-        key: __dirname + "/../config/keys/key.p8",
-        keyId: "SUQEJCCG5Q",
-        teamId: "AUR7UR6M72",
-    },
-    production: false,
-}
-// var apnProvider = new apn.Provider(options)
-
+// var apnProvider = new apn.Provider(config.apns)
+//
 // router.get('/notification',function(req,res){
 //
 //   let deviceToken = "51334be1b01a2f0c571cb2f42f3fda96116811cde34c5f07255cae73482de3c5"
@@ -57,8 +49,8 @@ var options = {
 //
 //   note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
 //   note.sound = "ping.aiff"
-//   note.alert = "\uD83D\uDCE7You have another new message"
-//   note.payload = {'messageFrom': 'John Appleseedo'}
+//   note.alert = "\uD83D\uDCE7You have another new asd as message"
+//   note.payload = {'messageFrom': 'John Appleseed do'}
 //   note.topic = "com.cesargdm.red-expo-social"
 //
 //   apnProvider.send(note, deviceToken).then( (result) => {
