@@ -1,0 +1,354 @@
+$lightGray: rgb(224, 224, 224);
+$gray: rgb(201, 201, 201);
+$green: rgb(75, 185, 22);
+$orange: rgb(233, 122, 50);
+
+html,body,h1,h2,h3,h4,h5,h6,div, table,main,footer,aside,article,p,ul,li,input,button, th,td,tr,a, textarea {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  font-weight: 300;
+  line-height: 1.5;
+  color: rgb(33, 33, 33);
+  #resa-logo {
+    width: 30px;
+    height: 30px;
+    display: inline-block;
+  }
+}
+button.save {
+  background: $green;
+}
+.org-image {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  border-radius: 5px;
+  overflow: hidden;
+  img, input {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+  }
+  input {
+    background: rgb(0, 0, 0);
+    opacity: 0;
+    cursor: pointer;
+  }
+  input:hover {
+    opacity: 0.2;
+    content: 'Seleccionar una nueva imagen'
+  }
+}
+ul {
+  list-style: none;
+}
+main.content {
+  margin: 20px auto;
+  a {
+    color: $orange;
+  }
+}
+.content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.nav-menu {
+  user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  .show-more {
+    position: relative;
+    .more-options {
+      position: absolute;
+      top: 38px;
+      background: #fff;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.25);
+      border-radius: 5px;
+      right: 0;
+      width: 160px;
+      color: rgb(52, 52, 52);
+      overflow: hidden;
+      p {
+        padding: 10px 20px;
+      }
+      p:hover {
+        background: $lightGray;
+      }
+      p:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+.table {
+  border: 1px solid $lightGray;
+  border-radius: 5px;
+  margin: 20px 0;
+  overflow: hidden;
+  .table-elem {
+    display: block;
+    display: flex;
+    cursor: pointer;
+    &:hover {
+      background: rgb(251, 251, 251);
+    }
+    div {
+      border-bottom: 1px solid $lightGray;
+      padding: 5px 10px;
+      max-height: 35px;
+      flex-grow: 1;
+      flex-basis: 100px;
+      overflow: hidden;
+      display: inline-block;
+    }
+  }
+  .table-head {
+    .table-elem {
+      background: $gray;
+      color: #fff;
+      font-weight: 600;
+    }
+  }
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+header {
+  nav {
+    background: $orange;
+    font-weight: 600;
+    padding: 10px 50px;
+    ul {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      li {
+        color: rgba(255,255,255,0.65);
+        cursor: pointer;
+        &:hover,&.active {
+          color: rgba(255,255,255,1);
+        }
+      }
+      li#resa-logo, li#resa-logo {
+        height: 30px;
+        img {
+          opacity: 0.8;
+        }
+        &.active img, img:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
+}
+.mini-header {
+  display: flex;
+  width: 100%;
+  input[type="text"] {
+    flex-grow: 1;
+    font-size: 1rem;
+    padding: 5px 15px;
+    margin-right: 10px;
+  }
+}
+.element.progress {
+  position: relative;
+  .spinner {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+  }
+}
+.model.editable {
+  .title {
+    font-size: 2rem;
+  }
+  h3 {
+    border-top: 1px solid $gray;
+    padding-top: 10px;
+    margin-bottom: 10px;
+  }
+  .section {
+    display: flex;
+    flex-grow: 1;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .element {
+    margin-right: 10px;
+    label, input {
+      display: block;
+      transition: 0.2s;
+    }
+    input[readonly="true"], input[readonly] {
+      border: 1px solid transparent;
+      padding: 5px 0;
+    }
+  }
+}
+router-view {
+  .hover {
+    position: fixed;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0,0,0,.2);
+    overflow-y: scroll;
+    .add-model {
+      background: #fff;
+      max-width: 400px;
+      border-radius: 10px;
+      margin: 50px auto;
+      padding: 20px;
+      position: relative;
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .selector {
+        position: relative;
+        height: 30px;
+        display: flex;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        padding: 5px 15px;
+        align-items: center;
+        input {
+          border: none;
+          padding: 0;
+        }
+        > p {
+          padding: 0;
+          flex-shrink: 0;
+        }
+        .selections {
+          z-index: 1;
+          top: 30px;
+          background: #FFF;
+          position: absolute;
+          max-height: 200px;
+          overflow-y: scroll;
+          padding: 5px;
+          left: 0;
+          margin-bottom: 20px;
+          border-radius: 5px;
+          box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+          p {
+            cursor: pointer;
+            border-bottom: 1px solid $gray;
+            padding: 3px 5px;
+          }
+        }
+      }
+      .location-wrapper {
+        display: flex;
+        input {
+          flex-grow: 1;
+          margin-right: 10px;
+        }
+        input:last-child {
+          margin-right: 0;
+        }
+      }
+      .element {
+        margin: 5px 0;
+        display: inline-block;
+        margin-right: 20px;
+        width: 100%;
+        input, textarea {
+          width: 100%;
+        }
+        textarea {
+          height: 150px;
+        }
+      }
+      label {
+        display: block;
+      }
+    }
+  }
+}
+button {
+
+  &.cancel {
+    border: 1px solid rgb(224, 57, 57);
+    color: rgb(224, 57, 57);
+    background: #fff;
+    &.filled {
+      border: none;
+      background: rgb(219, 39, 39);
+      color: #fff;
+    }
+    &:active {
+      background: rgb(224, 57, 57);
+      color: #fff;
+    }
+  }
+  &.add {
+    background: rgb(98,192,88);
+    width: 100%;
+    &:active {
+      background: rgb(81, 154, 73);
+    }
+  }
+}
+button[disabled],button[disabled="disabled"] {
+  cursor: default;
+  background: $gray;
+}
+label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+input, textarea {
+  font-size: 1rem;
+  outline: none;
+  border-radius: 3px;
+  padding: 5px 15px;
+  border: 1px solid $lightGray;
+}
+input[type=button], button {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 3px;
+  padding: 5px 15px;
+  cursor: pointer;
+}
+footer {
+  text-align: center;
+  font-size: 0.8rem;
+  color: rgb(167, 167, 167);
+  margin: 30px 0;
+  a {
+    font-weight: 500;
+  }
+  .powered {
+    width: 85px;
+    height: 25px;
+  }
+}
+//Animations
+.fade-transition {
+  transition: all .3s ease;
+  overflow: hidden;
+}
+/* .expand-enter defines the starting state for entering */
+/* .expand-leave defines the ending state for leaving */
+.fade-enter, .fade-leave {
+  height: 0;
+  padding: 0 10px;
+  opacity: 0;
+}
