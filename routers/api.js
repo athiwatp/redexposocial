@@ -7,6 +7,7 @@ let express = require('express'), //Express
     fs = require('fs'), //file writer
     bodyParser = require('body-parser'),
     bcrypt = require('bcrypt-nodejs'),
+    apn = require('apn'), //Apple Push Notifications Package
     router = express.Router() //Express router
 
 let User = require(__dirname + "/../models/user.js"), //Model for users
@@ -16,8 +17,7 @@ let User = require(__dirname + "/../models/user.js"), //Model for users
     Event = require(__dirname + "/../models/event.js"),
     config = require(__dirname + "/../config/config.js") //Database connection, and secret password
 
-//SECURITY
-  //Brute force attack
+//SECURITY, Brute force attack
 let ExpressBrute = require('express-brute'),
     MongoStore = require('express-brute-mongo'),
     MongoClient = require('mongodb').MongoClient,
@@ -31,17 +31,39 @@ let store = new MongoStore(function (ready) {
 let bruteforce = new ExpressBrute(store)
 
 let storage = multer.diskStorage({ //Storage helper
-    destination: function (req, file, cb) { //File uploads destination
-        cb(null, 'public/uploads/')
-    },
+    destination: (req, file, cb) => cb(null, 'public/uploads/'), //File uploads destination
     filename: function (req, file, cb) { //Filenames for every upload, we'll use timestamp and stuff
-        var datetimestamp = Date.now()
-        cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1])
+        cb(null, file.fieldname + '-' + Date.now() + '.' + file.originalname.split('.')[file.originalname.split('.').length -1])
     }
 })
 
 mongoose.connect('mongodb://localhost/red') //make db connection
 let upload = multer({storage: storage}).single('file'); //Upload things
+
+// var apnProvider = new apn.Provider(config.apns)
+//
+// router.get('/notification',function(req,res){
+//
+//   let deviceToken = "51334be1b01a2f0c571cb2f42f3fda96116811cde34c5f07255cae73482de3c5"
+//   var note = new apn.Notification();
+//
+//   note.expiry = Math.floor(Date.now() / 1000) + 3600; // Expires 1 hour from now.
+//   note.sound = "ping.aiff"
+//   note.alert = "\uD83D\uDCE7You have another new asd as message"
+//   note.payload = {'messageFrom': 'John Appleseed do'}
+//   note.topic = "com.cesargdm.red-expo-social"
+//
+//   apnProvider.send(note, deviceToken).then( (result) => {
+//     res.status(200).json(result);
+//   })
+//
+// })
+
+/*******************************
+**                            **
+**         API ROUTES         **
+**                            **
+********************************/
 
 router.post('/users', function(req,res) {
   if (!req.body || !req.body.user) //If we dont have a body in the request or a user in the body request return error
@@ -214,9 +236,17 @@ router.route('/orgs/:org_id')
     if (err)
       res.status(500).json({'error': err})
     else if (!org)
-      res.status(400).json({'error': {'errmsg': "No org found, so bad so sad"}})
+      res.status(404).json({'error': {'errmsg': "No org found, so bad so sad"}})
     else
-      res.status(200).json({'org': org})
+      New.find({org: req.params.org_id}, 'title body tags images')
+      .exec(function(err,news){
+        if (err) {
+          res.status(200).json({'org': org})
+        }
+        org = org.toObject()
+        org.news = news
+        res.status(200).json({'org': org})
+      })
   })
 })
 

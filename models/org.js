@@ -11,10 +11,6 @@ let orgSchema = new mongoose.Schema({
     topics: [String],
     image: String,
     tags: [{type: mongoose.Schema.Types.ObjectId, ref: 'Tag'}],
-    news: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'New'
-    }],
     contact: {
       social: {
         facebook: String,
@@ -51,10 +47,6 @@ let orgSchema = new mongoose.Schema({
         }
       }
     },
-    events: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Event'
-    }],
     members: [{
       user: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
       access: Number
