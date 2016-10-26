@@ -11,17 +11,21 @@
       <div class="element">
         <input type="text" v-model="org.name.short" :readonly="!editing" class="title">
       </div>
+      <div class="element">
+        <label for="bio">Biografía</label>
+        <textarea v-model="org.bio" :readonly="!editing" id="bio"></textarea>
+      </div>
       <div class="section">
         <div class="element">
-          <label for="">Nombre legal</label>
-          <input type="text" v-model="org.name.legal" :readonly="!editing">
+          <label for="legal-name">Nombre legal</label>
+          <input type="text" v-model="org.name.legal" :readonly="!editing" id="legal-name">
         </div>
         <div class="element">
           <label for="">Nombre de usuario</label>
           <input type="text" v-model="org.username" :readonly="!editing">
         </div>
       </div>
-      <h3>Contact</h3>
+      <h3>Contacto</h3>
       <div class="section">
         <div class="element">
           <label for="twitter">Twitter</label>
@@ -71,9 +75,9 @@
           <input type="text" v-model="org.location.country" :readonly="!editing" id="country">
         </div>
       </div>
-      <h3>Fundation</h3>
-      <h3>Events</h3>
-      <h3>Members</h3>
+      <h3>Fundación</h3>
+      <h3>Eventos</h3>
+      <!-- <h3>Miembros</h3> -->
     </div>
     <!-- {{org | json}} -->
   </main>
