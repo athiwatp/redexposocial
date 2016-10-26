@@ -435,7 +435,7 @@ router.route('/users/:user_id/following/orgs')
 router.route('/news')
 .get(function(req,res){
   New.find({})
-  .populate('org author', 'name username')
+  .populate('org author tags', 'name username title color')
   .sort('-_id')
   .exec(function(err,news){
     if (err)
@@ -479,7 +479,7 @@ router.route('/news')
 router.route('/news/:new_id')
 .get(function(req,res){
   New.findById(req.params.new_id)
-  .populate('org author comments.user', 'name username image')
+  .populate('org author comments.user tags', 'name username image title color')
   .sort('comments._id')
   .exec(function(err, newObject){
     if (err)
@@ -493,9 +493,6 @@ router.route('/news/:new_id')
       res.status(200).json({'new': newObject})
     }
   })
-})
-.put(function(req,res){
-  res.status(500).json({'message': "Not yet supported"})
 })
 .delete(function(req,res){
   res.status(500).json({'message': "Not yet supported"})
@@ -656,12 +653,24 @@ router.route('/users')
 router.route('/orgs/:org_id')
 .put(function(req,res){
   delete req.body.org._id
-
   Org.findByIdAndUpdate(req.params.org_id, {$set: req.body.org}, {upsert: true})
   .exec(function(err, org){
-    if (err)
+    if (err) {
       return res.status(500).json({'err':err})
+    }
     res.status(200).json({'message': "Updated", 'org': org})
+  })
+})
+
+router.route('/news/:new_id')
+.put(function(req,res){
+  delete req.body.new_id
+  New.findByIdAndUpdate(req.params.new_id, {$set: req.body.new}, {upsert: true})
+  .exec(function(err, newObject){
+    if (err) {
+      return res.status(500).json({'err':err})
+    }
+    res.status(200).json({'message': "Updated", 'new': newObject})
   })
 })
 
