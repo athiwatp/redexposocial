@@ -5,7 +5,7 @@ let mongoose = require('mongoose')
 let newSchema = new mongoose.Schema({
     title: {type:String, unique: true},
     body: String,
-    tags: [{type: mongoose.Schema.Types.ObjectId, ref: 'Tag'}],
+    tags: [{type: Number, ref: 'Tag'}],
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     org: { type: mongoose.Schema.Types.ObjectId, ref: 'Org'},
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
