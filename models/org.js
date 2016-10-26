@@ -8,7 +8,6 @@ let orgSchema = new mongoose.Schema({
     },
     bio: String, //limit to 140c
     username: {type: String, unique: true, required: true},
-    topics: [String],
     image: String,
     tags: [{type: mongoose.Schema.Types.ObjectId, ref: 'Tag'}],
     contact: {
