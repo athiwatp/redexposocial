@@ -48,7 +48,7 @@
         <label for="">Imagen</label>
         <input type="file" v-model="eventObject.images[0]" @change="fileChange" name="headerImage">
       </div>
-      <button type="button" @click="addNew()" class="add" :disabled="uploadingImage">Añadir noticia</button>
+      <button type="button" @click="addEvent()" class="add" :disabled="uploadingImage">Añadir noticia</button>
     </div>
   </div>
 </template>

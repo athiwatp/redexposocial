@@ -26,7 +26,7 @@ Vue.use(VueResource)
 Vue.use(VueRouter)
 
 Vue.options.replace = false
-window.host = 'http://45.55.94.138'
+window.host = 'http://localhost:8080'
 
 Vue.http.interceptors.push((request, next) => {
 
