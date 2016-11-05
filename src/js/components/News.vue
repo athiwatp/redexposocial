@@ -1,76 +1,79 @@
 <template>
-  <main class="content">
-    <div class="mini-header">
-      <input type="text" v-model="searchQuery" placeholder="Buscar...">
-      <button type="text" @click="addModelShow = true">Nueva noticia</button>
-    </div>
-    <div class="table">
-      <div class="table-head">
-        <div class="table-elem">
-          <div>Title</div>
-          <div>Date</div>
-          <div>Org</div>
-          <div>Tag</div>
-          <div>Author</div>
+  <div class="">
+    <main class="content">
+      <div class="mini-header">
+        <input type="text" v-model="searchQuery" placeholder="Buscar...">
+        <button type="text" @click="addModelShow = true">Nueva noticia</button>
+      </div>
+      <div class="table">
+        <div class="table-head">
+          <div class="table-elem">
+            <div>Title</div>
+            <div>Date</div>
+            <div>Org</div>
+            <div>Tag</div>
+            <div>Author</div>
+          </div>
         </div>
-      </div>
-      <div class="table-body">
-        <div class="table-elem" v-for="new in news | filterBy searchQuery" v-link="'/news/' + new._id">
-          <div><p v-if="new.title">{{new.title}}</p></div>
-          <div><p v-if="new.date">{{new.date}}</p></div>
-          <div><p v-if="new.org">{{new.org.name.short}}</p></div>
-          <div class="tags-wrapper"><p v-if="new.tags[0]" class="tag mini-tag" :style="{background: new.tags[0].color}">{{new.tags[0].title}}</p></div>
-          <div><p v-if="new.author">{{new.author.username}}</p></div>
-        </div>
-      </div>
-    </div>
-  </main>
-  <div class="hover" v-if="addModelShow" transition="fade">
-    <div class="add-model">
-      <div class="header">
-        <h1>Noticia</h1>
-        <button type="button" class="cancel" @click="addModelShow=false">Cancelar</button>
-      </div>
-      <div class="element">
-        <label for="title">Título</label>
-        <input type="text" v-model="newObject.title" id="title">
-      </div>
-      <div class="element">
-        <label for="body">Cuerpo</label>
-        <textarea id="body" v-model="newObject.body"></textarea>
-      </div>
-      <div class="element" v-on-clickaway="selectorShowT=false">
-        <label for="tags">Tags</label>
-        <div class="selector tags">
-          <p v-for="tag in displayTags" :style="{background: tag.color}" class="tag">{{tag.title}}</p>
-          <input type="text" id="org" class="filter" @focus="selectorShowT=true" v-model="tagQuery" id="tags">
-          <div class="selections" v-show="selectorShowT">
-            <p v-for="tag in tags | filterBy tagQuery"
-              @click="setTag(this.tag, $index)"
-              :style="{background: tag.color}"
-              class="tag"
-              track-by="$index">{{tag.title}}</p>
+        <div class="table-body">
+          <div class="table-elem"  v-link="'/news/' + newModel._id">
+            <div><p v-if="newModel.title">{{newModel.title}}</p></div>
+            <div><p v-if="newModel.date">{{newModel.date}}</p></div>
+            <div><p v-if="newModel.org">{{newModel.org.name.short}}</p></div>
+            <div class="tags-wrapper"><p v-if="newModel.tags[0]" class="tag mini-tag" :style="{background: newModel.tags[0].color}">{{newModel.tags[0].title}}</p></div>
+            <div><p v-if="newModel.author">{{newModel.author.username}}</p></div>
           </div>
         </div>
       </div>
-      <div class="element" v-on-clickaway="selectorShow=false">
-        <label for="org">Organización</label>
-        <div class="selector">
-          <p>{{displayOrg}}</p>
-          <input type="text" id="org" class="filter" @focus="selectorShow=true" v-model="orgQuery">
-          <div class="selections" v-show="selectorShow">
-            <p v-for="org in orgs | filterBy orgQuery" @click="setOrg(this.org)">{{org.name.short}}</p>
+    </main>
+    <div class="hover" v-if="addModelShow" transition="fade">
+      <div class="add-model">
+        <div class="header">
+          <h1>Noticia</h1>
+          <button type="button" class="cancel" @click="addModelShow=false">Cancelar</button>
+        </div>
+        <div class="element">
+          <label for="title">Título</label>
+          <input type="text" v-model="newObject.title" id="title">
+        </div>
+        <div class="element">
+          <label for="body">Cuerpo</label>
+          <textarea id="body" v-model="newObject.body"></textarea>
+        </div>
+        <div class="element" v-on-clickaway="selectorShowT=false">
+          <label for="tags">Tags</label>
+          <div class="selector tags">
+            <p  :style="{background: tag.color}" class="tag">{{tag.title}}</p>
+            <input type="text" class="filter" @focus="selectorShowT=true" v-model="tagQuery" id="tags">
+            <div class="selections" v-show="selectorShowT">
+              <p
+                @click="setTag(this.tag, index)"
+                :style="{background: tag.color}"
+                class="tag"
+                track-by="index">{{tag.title}}</p>
+            </div>
           </div>
         </div>
+        <div class="element" v-on-clickaway="selectorShow=false">
+          <label for="org">Organización</label>
+          <div class="selector">
+            <p>{{displayOrg}}</p>
+            <input type="text" id="org" class="filter" @focus="selectorShow=true" v-model="orgQuery">
+            <div class="selections" v-show="selectorShow">
+              <p @click="setOrg(this.org)">{{org.name.short}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="element progress">
+          <img src="/static/img/icons/spin.gif" class="spinner" v-show="uploadingImage"/>
+          <label for="">Imagen</label>
+          <input type="file" @change="fileChange" name="headerImage">
+        </div>
+        <button type="button" @click="addNew()" class="add" :disabled="uploadingImage">Añadir noticia</button>
       </div>
-      <div class="element progress">
-        <img src="/static/img/icons/spin.gif" class="spinner" v-show="uploadingImage"/>
-        <label for="">Imagen</label>
-        <input type="file" v-model="newObject.images[0]" @change="fileChange" name="headerImage">
-      </div>
-      <button type="button" @click="addNew()" class="add" :disabled="uploadingImage">Añadir noticia</button>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -129,7 +132,7 @@ export default {
     addNew() {
       this.$http.post('/api/news', {'newObject': this.newObject}).then((res) => {
         this.addModelShow = false
-        this.news.unshift(res.body.new)
+        this.news.unshift(res.body.newModel)
         this.newObject = {}
       }, (err) => {
         this.error = err
@@ -155,7 +158,7 @@ export default {
   },
   created() {
     this.$parent.active = 3
-    
+
     this.$http.get(window.host + '/api/news')
     .then((data) => {
       this.news = data.body.news

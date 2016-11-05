@@ -6,7 +6,7 @@
     <button type="button" @click="save()" v-show="editing" class="save">Save</button>
     <div class="model editable">
       <div class="newObject-image">
-        <img v-for="image in newObject.images" :src="image" alt="" class="image"/>
+        <img  :src="image" alt="" class="image"/>
         <!-- <input type="file" @change="fileChange" accept="image/*"> -->
       </div>
       <div class="element">
@@ -21,7 +21,7 @@
       <div class="element" v-on-clickaway="selectorShow=false">
         <label for="tags">Tags</label>
         <div class="selector tags">
-          <p v-for="tag in newObject.tags" :style="{background: tag.color}" class="tag">{{tag.title}}</p>
+          <p  :style="{background: tag.color}" class="tag">{{tag.title}}</p>
           <!-- <input type="text" id="org" class="filter" @focus="selectorShow=true" v-model="tagQuery" id="tags">
           <div class="selections" v-show="selectorShow">
             <p v-for="tag in tags | filterBy tagQuery"

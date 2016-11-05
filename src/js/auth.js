@@ -1,4 +1,4 @@
-import router from './app.js'
+import router from './app.js' //router
 
 export default {
 
@@ -9,7 +9,7 @@ export default {
       localStorage.setItem('token', data.body.token)
       context.$parent.user.authenticated = true
       if (redirect) // Redirect to a specified route
-        context.$router.go(redirect)
+        context.$router.push(redirect)
 
     },(err) => {
 
@@ -24,7 +24,7 @@ export default {
       localStorage.setItem('token', data.body.token)
 
       if (redirect)
-        context.$router.go(redirect)
+        context.$router.push(redirect)
 
     },(err) => {
       context.error = err
@@ -35,7 +35,7 @@ export default {
 
     localStorage.removeItem('token')
     context.user.authenticated = false
-    context.$router.go('/')
+    context.$router.push('/')
 
   },
 

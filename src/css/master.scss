@@ -377,13 +377,11 @@ footer {
   }
 }
 //Animations
-.fade-transition {
+.fade-enter-active, .fade-leave-active {
   transition: all .3s ease;
   overflow: hidden;
 }
-/* .expand-enter defines the starting state for entering */
-/* .expand-leave defines the ending state for leaving */
-.fade-enter, .fade-leave {
+.fade-enter, .fade-leave-active {
   height: 0;
   padding: 0 10px;
   opacity: 0;

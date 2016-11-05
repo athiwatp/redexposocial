@@ -1,5 +1,5 @@
 <template>
-  <main class="content">
+  <div class="content">
     <button type="button" @click="editModel()" v-show="!editing">Edit</button>
     <button type="button" @click="cancel()" v-show="editing" class="cancel filled">Cancel</button>
     <button type="button" @click="save()" v-show="editing" class="save">Save</button>
@@ -79,8 +79,7 @@
       <h3>Eventos</h3>
       <!-- <h3>Miembros</h3> -->
     </div>
-    <!-- {{org | json}} -->
-  </main>
+  </div>
 </template>
 
 <script>

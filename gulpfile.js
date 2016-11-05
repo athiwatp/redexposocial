@@ -11,7 +11,7 @@ let gulp = require('gulp'),
     concat = require('gulp-concat')
 
 gulp.task('sass', function() {
-  return gulp.src('src/css/**/*.scss')
+  return gulp.src('src/css/:*+/*.scss')
   //TODO: remove source maps on distribution
   .pipe(sourcemaps.init())
   .pipe(sass().on('error', sass.logError))
@@ -23,13 +23,13 @@ gulp.task('sass', function() {
 })
 
 gulp.task('watch', function() {
-  gulp.watch('./src/css/**/*.scss', ['sass'])
-  gulp.watch('./src/views/**/*.html', ['htmlminify'])
-  gulp.watch(['./src/js/**/*.js','./src/js/**/*.vue'], ['webpack'])
+  gulp.watch('./src/css/:*+/*.scss', ['sass'])
+  gulp.watch('./src/views/:*+/*.html', ['htmlminify'])
+  gulp.watch(['./src/js/:*+/*.js','./src/js/**/*.vue'], ['webpack'])
 })
 
 gulp.task('htmlminify', function() {
-  return gulp.src('src/views/**/*.html')
+  return gulp.src('src/views/:*+/*.html')
   .pipe(htmlmin({collapseWhitespace: true}))
   .pipe(gulp.dest('public/views'))
 })
@@ -39,9 +39,9 @@ gulp.task('webpack', function(){
   return gulp.src(['./src/js/auth.js','./src/js/app.js']) //Strange workaround
   .pipe(
     webpack(require(__dirname + '/webpack.config.js'))
-    .on('error', (err) => {
-      if (err) console.log('--- Webpack error ---\n', err)
-    })
+    // .on('error', (err) => {
+    //   if (err) console.log('--- Webpack error ---\n', err)
+    // })
   )
   .pipe(rename('bundle.js'))
   .pipe(gulp.dest('public/js'))
