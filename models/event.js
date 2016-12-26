@@ -2,7 +2,7 @@
 let mongoose = require('mongoose')
 
 var userSchema = new mongoose.Schema({
-    title: { type:String, unique: true },
+    title: { type:String, unique: true, required: true},
     body: String,
     organizers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Org' }],
     host: { type: mongoose.Schema.Types.ObjectId, ref: 'Org' },

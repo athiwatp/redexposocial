@@ -101,6 +101,16 @@ router.post('/users', function(req,res) {
   })
 })
 
+router.route('/tags')
+.get(function(req,res){
+  Tag.find()
+  .exec(function(err,tags){
+    if (err)
+      return res.status(500).json({'error': err})
+    res.status(200).json({tags: tags})
+  })
+})
+
 router.route('/users/i=:user_identifier?')
 .get(function(req,res){
   User.findOne({$or: [{'email': req.params.user_identifier},{ 'username': req.params.user_identifier}] })
@@ -167,22 +177,6 @@ router.use(function(req, res, next) {
   } else {
     res.status(403).json({'error':{'message': "No token provided, get yourself a token ._."}})
   }
-})
-
-/*******************************
-**                            **
-**           TAGS            **
-**                            **
-********************************/
-
-router.route('/tags')
-.get(function(req,res){
-  Tag.find()
-  .exec(function(err,tags){
-    if (err)
-      return res.status(500).json({'error': err})
-    res.status(200).json({tags: tags})
-  })
 })
 
 /*******************************
@@ -443,12 +437,28 @@ router.route('/news')
     else if (!news || news.length == 0)
       res.status(404).json({'error': {'errmsg': "No news found, go on and make 'em!"}})
     else {
-      var mappedNews = news.map(function(obj){
+      let mappedNews = news.map(function(obj){
         obj = obj.toObject()
         obj.favorited = favorited(obj, req._UID)
         return obj
       })
-      res.status(200).json({'news': mappedNews})
+
+      User.findById(req._UID)
+      .exec(function(err,user){
+        if (err) return res.status(500).json({'error': err})
+        user = user.toObject()
+
+        mappedNews = mappedNews.filter(function(newObject){
+          let isInTags = false
+          for (let tag in newObject.tags) {
+            if (user.interests.indexOf(newObject.tags[tag]._id) >= 0) {
+              isInTags = true
+            }
+          }
+          return isInTags
+        })
+        res.status(200).json({'news': mappedNews})
+      })
     }
   })
 })
@@ -556,7 +566,9 @@ router.route('/news/:new_id/favorites')
 router.route('/events')
 .get(function(req,res){
   //TODO: return just the number of attendance or some, not all
-  Event.find({})
+  Event.find()
+  .sort('-_id')
+  .populate('organizers')
   .exec(function(err,events){
     if (err)
       res.status(500).json({'error': err})
@@ -568,13 +580,26 @@ router.route('/events')
 })
 .post(function(req,res){
 
+  User.findById(req._UID)
+  .exec(function(err,user){
+    if (err)
+      return res.status(500).json({'error': err})
 
+    if (user.access <= 0) { //TODO: Or admin of the page
+      res.status(301).json({message: "You are not admin of the org, or general admin >:|"})
+    } else {
+      req.body.eventObject.author = req._UID
+      new Event(req.body.eventObject)
+      .save(function(err, eventObject){
+        if (err)
+          return res.status(500).json({'error': err})
 
+        //TODO: Send PUSH NOTIFICATIONS
 
-  //TODO: Sednd push notifications
-
-
-  res.status(500).json({'message': "Not yet implemented"})
+        res.status(201).json({eventObject: eventObject, message: "Successfully created new event ;)"})
+      })
+    }
+  })
 })
 
 //TODO: get events by location queries, city name, coordinates, country
