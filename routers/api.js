@@ -452,7 +452,7 @@ router.route('/news')
         mappedNews = mappedNews.filter(function(newObject){
           let isInTags = false
           for (let tag in newObject.tags) {
-            if (user.interests.indexOf(newObject.tags[tag]._id) >= 0) {
+            if (user.tags.indexOf(newObject.tags[tag]._id) >= 0) {
               isInTags = true
             }
           }
