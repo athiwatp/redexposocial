@@ -22,7 +22,7 @@
     "express-brute": "^1.0.1",
     "forever": "^0.15.2",
     "gulp": "^3.9.1",
-    "helmet": "^2.3.0",
+    "helmet": "^3.2.0",
     "jsonwebtoken": "^7.1.9",
     "jwt-decode": "^2.1.0",
     "minimatch": "^3.0.2",

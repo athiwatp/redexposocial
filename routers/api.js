@@ -89,6 +89,7 @@ router.post('/users', function(req,res) {
           password: bcrypt.hashSync(req.body.user.password + config.secret), //Hash with salt
           email: req.body.user.email,
           username: req.body.user.username,
+          tags: req.body.user.tags
         }) //Create the new user with the user object, all atributes will be passed
         .save(function(err, user){ //Save it, note the point, this is a concatenated function: like new User().save
           if (err)
