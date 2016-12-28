@@ -23,7 +23,7 @@ let userSchema = new mongoose.Schema({
       state: String,
       country: String
     },
-    tags: [{type: mongoose.Schema.Types.ObjectId, ref: 'Tag'}],
+    tags: [{type: Number, ref: 'Tag'}],
     followingOrgs: [{type: mongoose.Schema.Types.ObjectId, ref: 'Org'}],
     password: { type: String, required: true },
     email: { type: String, required: true, unique: true },
