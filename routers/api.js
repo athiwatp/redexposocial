@@ -114,7 +114,7 @@ router.route('/tags')
 
 router.route('/tags/:tag_id/news')
 .get(function(req,res){
-  News.find({tags: req.params.tag_id})
+  New.find({tags: req.params.tag_id})
   .exec(function(err,news){
     if (err)
       return res.status(500).json({'error': err})
