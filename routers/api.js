@@ -456,9 +456,12 @@ router.route('/news')
 
       User.findById(req._UID)
       .exec(function(err,user){
-        if (err) return res.status(500).json({'error': err})
+        if (err)
+          return res.status(500).json({'error': err})
         user = user.toObject()
-
+        if (user.access > 0) {
+          return mappedNews
+        }
         mappedNews = mappedNews.filter(function(newObject){
           let isInTags = false
           for (let tag in newObject.tags) {
