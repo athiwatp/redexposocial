@@ -112,6 +112,16 @@ router.route('/tags')
   })
 })
 
+router.route('/tags/:tag_id/news')
+.get(function(req,res){
+  News.find({tags: req.params.tag_id})
+  .exec(function(err,news){
+    if (err)
+      return res.status(500).json({'error': err})
+    res.status(200).json({news: news})
+  })
+})
+
 router.route('/users/i=:user_identifier?')
 .get(function(req,res){
   User.findOne({$or: [{'email': req.params.user_identifier},{ 'username': req.params.user_identifier}] })
