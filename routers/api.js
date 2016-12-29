@@ -460,7 +460,7 @@ router.route('/news')
           return res.status(500).json({'error': err})
         user = user.toObject()
         if (user.access > 0) {
-          return mappedNews
+          res.status(200).json({'news': mappedNews})
         }
         mappedNews = mappedNews.filter(function(newObject){
           let isInTags = false
