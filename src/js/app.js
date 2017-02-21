@@ -26,7 +26,7 @@ Vue.use(VueResource)
 Vue.use(VueRouter)
 
 Vue.options.replace = false
-window.host = 'http://localhost:8080'
+window.host = 'https://res.fucesa.com'
 
 Vue.http.interceptors.push((request, next) => {
 
