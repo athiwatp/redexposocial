@@ -136,7 +136,9 @@ router.route('/users/i=:user_identifier?')
 
 router.route('/authenticate')
 .get(function(req,res){
-  let token = req.headers['x-access-token'] //check for the token uniquely in the headers
+
+  const token = req.headers['x-access-token'] //check for the token uniquely in the headers
+
   if (token) { //Check that the request has a token
     jwt.verify(token, config.secret, function(err) { // Decode token and check it's valid with the secret password
       if (err)
