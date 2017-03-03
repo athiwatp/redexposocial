@@ -10,12 +10,12 @@ let express = require('express'), //Express
     apn = require('apn'), //Apple Push Notifications Package
     router = express.Router() //Express router
 
-let User = require(__dirname + "/../models/user.js"), //Model for users
-    Org = require(__dirname + "/../models/org.js"), //Model for Organizations
-    New = require(__dirname + "/../models/new.js"),
-    Tag = require(__dirname + "/../models/tag.js"),
-    Event = require(__dirname + "/../models/event.js"),
-    config = require(__dirname + "/../config/config.js") //Database connection, and secret password
+const User = require(__dirname + "/../models/user.js") //Model for users
+const Org = require(__dirname + "/../models/org.js") //Model for Organizations
+const New = require(__dirname + "/../models/new.js")
+const Tag = require(__dirname + "/../models/tag.js")
+const Event = require(__dirname + "/../models/event.js"),
+const config = require(__dirname + "/../config/config.js") //Database connection, and secret password
 
 //SECURITY, Brute force attack
 let ExpressBrute = require('express-brute'),
@@ -150,7 +150,7 @@ router.route('/authenticate')
     res.status(401).json({'error':{'message': "No token provided"}})
   }
 })
-.post(bruteforce.prevent, function(req, res) {
+.post(bruteforce.prevent, (req, res) => {
   if (!req.body.username && !req.body.email) { //if no username or email is passed send this
     res.status(403).json({'message': "Authentication failed, no user specified" })
   } else {

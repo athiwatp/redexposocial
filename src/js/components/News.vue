@@ -127,11 +127,12 @@ export default {
       this.selectorShow = false
     },
     addNew() {
-      this.$http.post('/api/news', {'newObject': this.newObject}).then((res) => {
+      this.$http.post('/api/news', {'newObject': this.newObject}).then(
+        res => {
         this.addModelShow = false
         this.news.unshift(res.body.new)
         this.newObject = {}
-      }, (err) => {
+      }, err => {
         this.error = err
       })
     },
@@ -139,13 +140,13 @@ export default {
       var reader = new FileReader(),
           image = new Image(),
           self = this
-      reader.onload = (e) => {
+      reader.onload = e => {
         self.$http.post('/api/upload',
         {'img': e.target.result})
-        .then((res) => {
+        .then(res => {
           self.newObject.images[0] = res.body.path
           self.uploadingImage = false
-        }, (errRes) => {
+        }, errRes => {
           this.error = err
           self.uploadingImage = false
         })
@@ -155,25 +156,25 @@ export default {
   },
   created() {
     this.$parent.active = 3
-    
-    this.$http.get(window.host + '/api/news')
-    .then((data) => {
-      this.news = data.body.news
-    },(err) => {
+
+    this.$http.get(windo.ost + '/api/news')
+    .then(res => {
+      this.news = res.body.news
+    }, err => {
       this.error = err
     })
 
     this.$http.get(window.host + '/api/tags')
-    .then((res) => {
+    .then(res => {
       this.tags = res.body.tags
-    }, (errRes) => {
+    }, errRes => {
       this.error = errRes
     })
 
     this.$http.get(window.host + '/api/orgs')
-    .then((res) => {
+    .then(res => {
       this.orgs = res.body.orgs
-    },(errRes) => {
+    }, errRes => {
       this.error = errRes
     })
 
