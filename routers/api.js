@@ -14,14 +14,15 @@ const User = require(__dirname + "/../models/user.js") //Model for users
 const Org = require(__dirname + "/../models/org.js") //Model for Organizations
 const New = require(__dirname + "/../models/new.js")
 const Tag = require(__dirname + "/../models/tag.js")
-const Event = require(__dirname + "/../models/event.js"),
+const Event = require(__dirname + "/../models/event.js")
 const config = require(__dirname + "/../config/config.js") //Database connection, and secret password
 
 //SECURITY, Brute force attack
-let ExpressBrute = require('express-brute'),
-    MongoStore = require('express-brute-mongo'),
-    MongoClient = require('mongodb').MongoClient,
-    ObjectId = require('mongodb').ObjectId
+const ExpressBrute = require('express-brute')
+const MongoStore = require('express-brute-mongo')
+const MongoClient = require('mongodb').MongoClient
+const ObjectId = require('mongodb').ObjectId
+
 let store = new MongoStore(function (ready) {
   MongoClient.connect(config.database, function(err, db) {
     if (err) throw err
