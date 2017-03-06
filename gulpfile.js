@@ -55,5 +55,5 @@ gulp.task('start', function () {
   })
 })
 
-gulp.task('dist', ['sass','htmlminify','webpack'])
+gulp.task('build', ['sass','htmlminify','webpack'])
 gulp.task('dev', ['sass','htmlminify','webpack','watch','start'])
