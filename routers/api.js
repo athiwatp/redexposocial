@@ -1,21 +1,22 @@
 'use strict'
 
-let express = require('express'), //Express
-    jwt = require('jsonwebtoken'), //Package for authentication tokens
-    multer = require('multer'), //Package for managing file uploads
-    mongoose = require('mongoose'), //db connector
-    fs = require('fs'), //file writer
-    bodyParser = require('body-parser'),
-    bcrypt = require('bcrypt-nodejs'),
-    apn = require('apn'), //Apple Push Notifications Package
-    router = express.Router() //Express router
+const express = require('express') //Express
+const jwt = require('jsonwebtoken') //Package for authentication tokens
+const multer = require('multer') //Package for managing file uploads
+const mongoose = require('mongoose') //db connector
+const fs = require('fs') //file writer
+const path = require('path')
+const bodyParser = require('body-parser')
+const bcrypt = require('bcrypt-nodejs')
+const apn = require('apn') //Apple Push Notifications Package
+const router = express.Router() //Express router
 
-const User = require(__dirname + "/../models/user.js") //Model for users
-const Org = require(__dirname + "/../models/org.js") //Model for Organizations
-const New = require(__dirname + "/../models/new.js")
-const Tag = require(__dirname + "/../models/tag.js")
-const Event = require(__dirname + "/../models/event.js")
-const config = require(__dirname + "/../config/config.js") //Database connection, and secret password
+const User = require(path.resolve('./models/user.js')) //Model for users
+const Org = require(path.resolve('./models/org.js')) //Model for Organizations
+const New = require(path.resolve('./models/new.js'))
+const Tag = require(path.resolve('./models/tag.js'))
+const Event = require(path.resolve('./models/event.js'))
+const config = require(path.resolve('./config/config.js')) //Database connection, and secret password
 
 //SECURITY, Brute force attack
 const ExpressBrute = require('express-brute')
@@ -75,11 +76,11 @@ router.post('/users', function(req,res) {
       res.status(500).json({'error':err}) //If there's an error return a 500 (internal server error)
     else {
       if (user) { //if user exists
-        if (user.email == req.body.user.email && user.username == req.body.user.username) //Validate the user doesn't exists
+        if (user.email === req.body.user.email && user.username === req.body.user.username) //Validate the user doesn't exists
           return res.status(409).json({'error':{'message': "Email and user already exists"}})
-        if (user.username == req.body.user.username)
+        if (user.username === req.body.user.username)
           return res.status(409).json({'error':{'message': "User already exists"}})
-        if (user.email == req.body.user.email)
+        if (user.email === req.body.user.email)
           return res.status(409).json({'error': {'message': "Email already exists"}})
       } else { //If no errors or authentication problems occurr, continue to create the user
         new User({
@@ -271,7 +272,8 @@ router.route('/upload')
 
   var data = matches[0].replace(/^data:image\/\w+;base64,/, '')
 
-  fs.writeFile(__dirname + '/../public/uploads/' + fileName, data, {encoding: 'base64'}, function(err){
+  fs.writeFile(path.resolve('./public/uploads/') + fileName, data, {encoding: 'base64'},
+  (err) => {
     if (err)
       return res.status(500)
 
@@ -335,7 +337,7 @@ router.route('/orgs/:org_id/news')
   .exec(function(err, news){
     if (err)
       res.status(500).json({'error': err})
-    else if (!news || news.length == 0)
+    else if (!news || news.length === 0)
       res.status(404).json({'error': {'message':"No news found"}})
     else
       res.status(200).json({news: news})
@@ -382,7 +384,7 @@ router.route('/users/:user_id/photo')
 .post(function(req,res){
   if (!req.body.img)
     return res.status(400)
-  if (req.params.user_id != req._UID)
+  if (req.params.user_id !== req._UID)
     return res.status(403)
 
     console.log('IMG');
@@ -448,7 +450,7 @@ router.route('/news')
   .exec(function(err,news){
     if (err)
       res.status(500).json({'error': err})
-    else if (!news || news.length == 0)
+    else if (!news || news.length === 0)
       res.status(404).json({'error': {'errmsg': "No news found, go on and make 'em!"}})
     else {
       let mappedNews = news.map(function(obj){
@@ -527,7 +529,7 @@ router.route('/news/:new_id')
 
 function favorited(newObject, id) {
   for (var i = 0; i < newObject.favorites.length; i++) {
-    if (JSON.stringify(newObject.favorites[i]) == JSON.stringify(id))
+    if (JSON.stringify(newObject.favorites[i]) === JSON.stringify(id))
       return true
   }
   return  false
@@ -535,7 +537,7 @@ function favorited(newObject, id) {
 
 router.route('/news/:new_id/comments')
 .post(function(req,res){
-  if (req.body.comment.length == 0)
+  if (req.body.comment.length === 0)
     return res.status(400).json({message: "Try something larger"})
   New.findByIdAndUpdate(req.params.new_id, {$push: {comments: {body: req.body.comment, user: req._UID}}}, {safe: true, new: true})
   .exec(function(err, result) {
@@ -589,7 +591,7 @@ router.route('/events')
   .exec(function(err,events){
     if (err)
       res.status(500).json({'error': err})
-    else if (!events || events.length == 0)
+    else if (!events || events.length === 0)
       res.status(404).json({'error': {'errmsg': "No events found, this city is so boring"}})
     else
       res.status(200).json({'events': events})
@@ -668,17 +670,16 @@ router.route('/events/:event_id/likes')
 
 
 //☝︎ All that is before this middleware won't be protected for level 0
-router.use(function(req, res, next) {
+router.use((req, res, next) => {
   User.findById(req._UID, 'access') //Just get the access atribute of the user
   .exec(function(err,user){
     if (err)
-      res.status(500).json({'error':err})
-    else {
-      if (user.access <= 0) //Verify access level
-        res.status(401).json({'error': {'errmsg': "You have no power here, hahaha!!!, Uhm, I mean, that's sad :'("}})
-      else
-        next() //Go to the next stuff
-    }
+      return res.status(500).json({'error':err})
+
+    if (user.access <= 0) //Verify access level
+      return res.status(401).json({'error': {'errmsg': "You have no power here, hahaha!!!, Uhm, I mean, that's sad :'("}})
+    next() //Go to the next route
+
   })
 })
 
