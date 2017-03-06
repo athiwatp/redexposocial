@@ -24,23 +24,24 @@ const MongoStore = require('express-brute-mongo')
 const MongoClient = require('mongodb').MongoClient
 const ObjectId = require('mongodb').ObjectId
 
-let store = new MongoStore(function (ready) {
+const store = new MongoStore(function (ready) {
   MongoClient.connect(config.database, function(err, db) {
     if (err) throw err
     ready(db.collection('bruteforce-store'))
   })
 })
-let bruteforce = new ExpressBrute(store)
+const bruteforce = new ExpressBrute(store)
 
-let storage = multer.diskStorage({ //Storage helper
-    destination: (req, file, cb) => cb(null, 'public/uploads/'), //File uploads destination
-    filename: function (req, file, cb) { //Filenames for every upload, we'll use timestamp and stuff
-        cb(null, file.fieldname + '-' + Date.now() + '.' + file.originalname.split('.')[file.originalname.split('.').length -1])
+const storage = multer.diskStorage({ //Storage helper
+    destination: (req, file, callback) => callback(null, 'public/uploads/'), //File uploads destination
+    filename: (req, file, cb) => { //Filenames for every upload, we'll use timestamp and stuff
+        cb(null, `${file.fieldname}-${Date.now()}.${file.originalname.split('.')[file.originalname.split('.').length -1]}`)
     }
 })
 
 mongoose.connect('mongodb://localhost/red') //make db connection
-let upload = multer({storage: storage}).single('file'); //Upload things
+
+const upload = multer({storage: storage}).single('file') //Upload things
 
 // var apnProvider = new apn.Provider(config.apns)
 //
@@ -481,52 +482,53 @@ router.route('/news')
     }
   })
 })
-.post(function(req,res){
+.post((req, res) =>
   User.findById(req._UID)
-  .exec(function(err,user){
+  .exec((err, user) => {
     if (err)
-      res.status(500).json({'error': err})
-    else {
-      if (user.access <= 0) { //TODO: Or admin of the page
-        res.status(301).json({message: "You are not admin of the org, or general admin >:|"})
-      } else {
-        req.body.newObject.author = req._UID
-        new New(req.body.newObject)
-        .save(function(err, newObj){
-          if (err)
-            return res.status(500).json({'error': err})
+      return res.status(500).json({'error': err})
 
-          //TODO: Send PUSH NOTIFICATIONS
+    if (user.access <= 0) { //TODO: Or admin of the page
+      return res.status(301).json({message: "You are not admin of the org, or general admin >:|"})
 
-          res.status(201).json({new: newObj, message: "Successfully created new new ;)"})
-        })
-      }
+      req.body.newObject.author = req._UID
+      new New(req.body.newObject)
+      .save((err, newObj) => {
+        if (err)
+          return res.status(500).json({'error': err})
+
+        //TODO: Send PUSH NOTIFICATIONS
+
+        res.status(201).json({new: newObj, message: "Successfully created new new ;)"})
+      })
     }
   })
-})
+)
 
 router.route('/news/:new_id')
-.get(function(req,res){
+.get((req,res) => {
   New.findById(req.params.new_id)
   .populate('org author comments.user tags', 'name username image title color')
   .sort('comments._id')
-  .exec(function(err, newObject){
+  .exec((err, newObject) => {
     if (err)
-      res.status(500).json({'error': err})
-    else if (!newObject)
-      res.status(404).json({'error': {'errmsg': "That new wasn't found, wtf happened?"}})
-    else {
-      newObject = newObject.toObject()
-      newObject.favorited = favorited(newObject, req._UID)
+      return res.status(500).json({'error': err})
+    if (!newObject)
+      return res.status(404).json({'error': {'errmsg': "That new wasn't found, wtf happened?"}})
 
-      res.status(200).json({'new': newObject})
-    }
+    newObject = newObject.toObject()
+    newObject.favorited = favorited(newObject, req._UID)
+
+    res.status(200).json({'new': newObject})
+
   })
 })
-.delete(function(req,res){
+.delete((req,res) => {
   res.status(500).json({'message': "Not yet supported"})
 })
 
+
+//Functions
 function favorited(newObject, id) {
   for (var i = 0; i < newObject.favorites.length; i++) {
     if (JSON.stringify(newObject.favorites[i]) === JSON.stringify(id))
@@ -536,11 +538,11 @@ function favorited(newObject, id) {
 }
 
 router.route('/news/:new_id/comments')
-.post(function(req,res){
+.post((req,res) => {
   if (req.body.comment.length === 0)
     return res.status(400).json({message: "Try something larger"})
   New.findByIdAndUpdate(req.params.new_id, {$push: {comments: {body: req.body.comment, user: req._UID}}}, {safe: true, new: true})
-  .exec(function(err, result) {
+  .exec((err, result) => {
     if (err)
       return res.status(500).json({err: err})
     res.status(201).json({result:result})
@@ -556,20 +558,20 @@ router.route('/news/:new_id/comments')
 })
 
 router.route('/news/:new_id/favorites')
-.get(function(req,res){
+.get((req, res) => {
   res.status(500).json({'message': "Not yet supported"})
 })
-.post(function(req,res){
+.post((req, res) => {
   New.findByIdAndUpdate(req.params.new_id, {$addToSet: {favorites: req._UID}}, {safe: true})
-  .exec(function(err, result) {
+  .exec((err, result) => {
     if (err)
       return res.status(500).json({err: err})
     res.status(201).json({result:result})
   })
 })
-.delete(function(req,res){
+.delete((req,res) => {
   New.findByIdAndUpdate(req.params.new_id, {$pull: {favorites: req._UID}}, {safe: true})
-  .exec(function(err, result) {
+  .exec((err, result) => {
     if (err)
       return res.status(500).json({err: err})
     res.status(200).json({result:result})
@@ -583,12 +585,12 @@ router.route('/news/:new_id/favorites')
 ********************************/
 
 router.route('/events')
-.get(function(req,res){
+.get((req,res) => {
   //TODO: return just the number of attendance or some, not all
   Event.find()
   .sort('-_id')
   .populate('organizers')
-  .exec(function(err,events){
+  .exec((err,events) => {
     if (err)
       res.status(500).json({'error': err})
     else if (!events || events.length === 0)
@@ -597,58 +599,56 @@ router.route('/events')
       res.status(200).json({'events': events})
   })
 })
-.post(function(req,res){
+.post((req,res) => {
 
   User.findById(req._UID)
-  .exec(function(err,user){
+  .exec((err,user) => {
     if (err)
       return res.status(500).json({'error': err})
 
-    if (user.access <= 0) { //TODO: Or admin of the page
-      res.status(301).json({message: "You are not admin of the org, or general admin >:|"})
-    } else {
-      req.body.eventObject.author = req._UID
-      new Event(req.body.eventObject)
-      .save(function(err, eventObject){
-        if (err)
-          return res.status(500).json({'error': err})
+    if (user.access <= 0) //TODO: Or admin of the page
+      return res.status(301).json({message: "You are not admin of the org, or general admin >:|"})
 
-        //TODO: Send PUSH NOTIFICATIONS
+    req.body.eventObject.author = req._UID
+    new Event(req.body.eventObject)
+    .save((err, eventObject) => {
+      if (err)
+        return res.status(500).json({'error': err})
 
-        res.status(201).json({eventObject: eventObject, message: "Successfully created new event ;)"})
-      })
-    }
+      //TODO: Send PUSH NOTIFICATIONS
+
+      res.status(201).json({eventObject: eventObject, message: "Successfully created new event ;)"})
+    })
   })
 })
 
 //TODO: get events by location queries, city name, coordinates, country
 
 router.route('/events/:event_id')
-.get(function(req,res){
+.get((req, res) =>{
   //TODO: return just the number of attendance/likes or some names, not all
   //TODO: add createdBy
   Event.findById(req.params.event_id)
-  .exec(function(err,event){
+  .exec((err, event) =>{
     if (err)
-      res.status(500).json({'error': err})
-    else if (!event)
-      res.status(404).json({'error': {'errmsg': "That event wasn't found, maybe someone deleted it? Hahaha, no they cant, just cancell it"}})
-    else
-      res.status(200).json({'events': event})
+      return res.status(500).json({'error': err})
+    if (!event)
+      return res.status(404).json({'error': {'errmsg': "That event wasn't found, maybe someone deleted it? Hahaha, no they cant, just cancell it"}})
+    res.status(200).json({'events': event})
   })
 })
-.put(function(req,res){
+.put((req, res) => {
   res.status(500).json({'message': "Not yet implemented"})
 })
-.delete(function(req,res){
+.delete((req, res) => {
   res.status(500).json({'message': "Not yet implemented"})
 })
 
 router.route('/events/:event_id/attendance')
-.get(function(req,res){
+.get((req, res) => {
   res.status(500).json({'message': "Not yet implemented"})
 })
-.post(function(req,res){
+.post((req, res) => {
   res.status(500).json({'message': "Not yet implemented"})
 })
 
